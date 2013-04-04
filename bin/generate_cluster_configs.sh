@@ -132,7 +132,7 @@ if [[ ! -d "$generated_cluster_configs/""$repo_name" ]]; then
 
     generate_configs 
     if [[ $? ]]; then 
-        printf "\n\n Swift cluster configs have been generated"
+        printf "\n\n Swift cluster configs have been generated \n\n"
     else 
         printf "\n\n Failed: Swift cluster configs failed to be generated \n\n"
         exit 1
