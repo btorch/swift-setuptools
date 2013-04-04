@@ -109,14 +109,14 @@ if [[ $? -gt 0 ]]; then
 fi
 
 printf "\n\t. Syncing admin configs %s into root / " "$git_repo_loc/admin"
-retc=$(rsync -aq0cn --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ / &>/dev/null; echo $?)
+retc=$(rsync -aq0c --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ / &>/dev/null; echo $?)
 if [[ $retc -gt 0 ]]; then 
     printf "\n\tError: rsync issues found\n\n"
     exit 1
 fi
 
 printf "\n\t. Setting up & Starting up git-daemon service"
-/etc/init.d/git-daemon start 
+/etc/init.d/git-daemon restart &>/dev/null
 
 printf "\n - AdminBox setup ... Done \n\n"
 
