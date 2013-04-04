@@ -77,6 +77,10 @@ repo_init () {
         st2=500
     fi
 
+    if [[ ! -d $git_base_dir ]]; then 
+        mkdir $git_base_dir
+    fi
+
     rsync -aq0c --exclude=".git" --exclude=".ignore" $cluster_configs/ $git_repo_loc
     cpwd=$(pwd)
     cd $git_repo_loc
