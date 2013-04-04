@@ -78,7 +78,6 @@ repo_init () {
     fi
 
     if [[ ! -d $git_base_dir ]]; then 
-        printf "\n\n $git_base_dir \n\n"
         mkdir $git_base_dir
     fi
 
