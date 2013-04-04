@@ -23,7 +23,7 @@ setup_conf=$(find . -name "setup_config.cfg")
 repo_module=$(find . -name "repo_setup.sh")
 template_dir=$(find . -type d -name "templates")
 templates_avail=$(ls -1 $template_dir | grep -v common)
-generated_cluster_configs="$HOME/generated_cluster_configs/"
+generated_cluster_configs="$HOME/generated_cluster_configs"
 
 
 # Run some checks
