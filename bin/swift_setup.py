@@ -13,10 +13,9 @@ os.environ['LANG'] = 'en_US.UTF-8'
 
 # APT-GET Options
 apt_opts = ' -y -qq --force-yes -o Dpkg::Options::=--force-confdef '
-#apt_opts = ' -s --force-yes '
 
 # Possible keyrings being used
-_keyrings = ['ubuntu-cloud-keyring']
+keyrings = ['ubuntu-cloud-keyring']
 
 # Packages lists
 generic_pkgs = ['swift', 'python-swift', 'python-swiftclient']
@@ -28,7 +27,8 @@ other_pkgs = ['python-suds', 'python-slogging']
 packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
             'proxy': ['swift-proxy'],
             'storage': ['swift-account', 'swift-container', 'swift-object'],
-            'saio': ['swift-proxy', 'swift-account', 'swift-container', 'swift-object'],
+            'saio': ['swift-proxy', 'swift-account', 'swift-container',
+                     'swift-object'],
             'other': ['python-suds', 'python-slogging']
             }
 
@@ -64,7 +64,7 @@ def generate_hosts_list(dsh_group):
 def add_keyrings():
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
-        sudo('apt-get install %s %s' % (apt_opts, ' '.join(_keyrings)))
+        sudo('apt-get install %s %s' % (apt_opts, ' '.join(keyrings)))
 
 
 def setup_swiftuser():
@@ -137,9 +137,7 @@ def do_common_setup(options):
         sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade %s '
              % apt_opts)
         sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
-        '''
-        if desired we would setup some system users here
-        '''
+
         '''
         Install some general tools
         '''
@@ -149,12 +147,6 @@ def do_common_setup(options):
                          'nmon', 'strace', 'iotop', 'debsums']
         sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
              % (apt_opts, ' '.join(general_tools)))
-
-        '''
-        Here we need to add a call to a function to retrieve the
-        config file from git in the admin box and then sync them over
-        to the system root. Not yet implemented
-        '''
 
         if options.platform:
             if 'dell' in options.platform:
@@ -261,7 +253,7 @@ def main():
     only happen on this single host as desired
     '''
     if options.single_host:
-        host_list = [options.single_host,]
+        host_list = [options.single_host, ]
     elif options.dsh_group:
         host_list = generate_hosts_list(options.dsh_group)
     else:
