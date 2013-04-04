@@ -78,6 +78,7 @@ repo_init () {
     fi
 
     if [[ ! -d $git_base_dir ]]; then 
+        printf "\n\n $git_base_dir \n\n"
         mkdir $git_base_dir
     fi
 
@@ -103,9 +104,9 @@ printf "\n - Starting AdminBox setup"
 printf "\n\t. Installing some utilities"
 apt_install
 printf "\n\t. Initializing swift-cluster-configs repository"
-retc=repo_init
 
-if [[ $retc -gt 0 ]]; then 
+repo_init
+if [[ $? -gt 0 ]]; then 
     printf "\n\tError: git repo initialization not successful (returned code: %s) " "$retc"
     printf "\n\tPath: %s" "$git_repo_loc"
     exit 1
@@ -115,8 +116,12 @@ printf "\n\t. Setting up & Starting up git-daemon service"
 setup_git_daemon
 
 printf "\n\t. Syncing admin configs %s into root / " "$git_repo_loc/admin"
-rsync -aq0cn --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ /
+retc=$(rsync -aq0cn --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ / &>/dev/null; echo $?)
+if [[ $retc -gt 0 ]]; then 
+    printf "\n\tError: rsync issues found\n\n"
+    exit 1
+fi
 
-printf "\n - AdminBox setup ... Done"
+printf "\n - AdminBox setup ... Done \n\n"
 
 exit 0 
