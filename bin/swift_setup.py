@@ -7,23 +7,34 @@ from optparse import OptionParser
 from fabric.api import *
 from fabric.network import *
 
-# Set some ENVs
+'''
+Setting up some environmental variables
+'''
 os.environ['LC_ALL'] = 'C'
 os.environ['LANG'] = 'en_US.UTF-8'
 
-# APT-GET Options
+'''
+Some parameters that are passed over on apt-get installs
+'''
 apt_opts = ' -y -qq --force-yes -o Dpkg::Options::=--force-confdef '
 
-# Possible keyrings being used
+'''
+Keyring packages that might be needed
+'''
 keyrings = ['ubuntu-cloud-keyring']
 
-# Packages lists
-generic_pkgs = ['swift', 'python-swift', 'python-swiftclient']
-proxy_pkgs = ['swift-proxy']
-storage_pkgs = ['swift-account', 'swift-container', 'swift-object']
-other_pkgs = ['python-suds', 'python-slogging']
+'''
+Utilities that will be install on all systems by the common setup
+'''
+general_tools = ['python-software-properties', 'patch', 'debconf',
+                 'bonnie++', 'dstat', 'python-configobj', 'curl',
+                 'subversion', 'git-core', 'iptraf', 'htop',
+                 'nmon', 'strace', 'iotop', 'debsums']
 
-# Package dict
+'''
+Dictionary that contains system:packages that will be installed
+for swift according to each system functionality
+'''
 packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
             'proxy': ['swift-proxy'],
             'storage': ['swift-account', 'swift-container', 'swift-object'],
@@ -62,6 +73,9 @@ def generate_hosts_list(dsh_group):
 
 
 def add_keyrings():
+    '''
+    installs any keyring package that is available in the dict
+    '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
         sudo('apt-get install %s %s' % (apt_opts, ' '.join(keyrings)))
@@ -81,6 +95,10 @@ def setup_swiftuser():
 
 
 def place_on_hold(pkg_list):
+    '''
+    Places the swift packages in maybe others in a hold status
+    That prevents apt-get upgrade from trying to install new versions
+    '''
     for name in pkg_list:
         sudo('echo "%s hold" | dpkg --set-selections' % name)
 
@@ -141,10 +159,6 @@ def do_common_setup(options):
         '''
         Install some general tools
         '''
-        general_tools = ['python-software-properties', 'patch', 'debconf',
-                         'bonnie++', 'dstat', 'python-configobj', 'curl',
-                         'subversion', 'git-core', 'iptraf', 'htop',
-                         'nmon', 'strace', 'iotop', 'debsums']
         sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
              % (apt_opts, ' '.join(general_tools)))
 
@@ -159,8 +173,9 @@ def do_swift_generic_setup():
     swift packages such as swift, python-swift and swift client
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        sudo('apt-get install %s %s ' % (apt_opts, ' '.join(generic_pkgs)))
-        place_on_hold(generic_pkgs)
+        sudo('apt-get install %s %s ' % (apt_opts,
+                                         ' '.join(packages['generic'])))
+        place_on_hold(' '.join(packages['generic']))
 
 
 def do_swift_node_setup(node_type):
