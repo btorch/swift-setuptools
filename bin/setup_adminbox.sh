@@ -3,6 +3,11 @@
 #   Created: 2013/04/04
 #
 #   Info:
+#       Small script to just do some basic setup 
+#       of the admin system. Also syncing the repo
+#       files that belong to the admin system over to 
+#       root. Please Note: Some cronjobs will be disabled
+#       by default which is desired on initial deploy
 #
 
 cpwd=$(pwd)
@@ -57,14 +62,6 @@ apt_install () {
                                         syslog-ng &>/dev/null
 }
 
-setup_git_daemon () {
-    sed -i 's;GIT_DAEMON_ENABLE=false;GIT_DAEMON_ENABLE=true;' $git_daemon_default
-    sed -i 's;GIT_DAEMON_DIRECTORY=/var/cache/git;GIT_DAEMON_DIRECTORY=/srv/git;' $git_daemon_default
-    sed -i 's;GIT_DAEMON_OPTIONS="";GIT_DAEMON_OPTIONS="--syslog --detach --export-all --max-connections=0";' $git_daemon_default
-    echo "GIT_DAEMON_BASE_PATH=/srv/git" >> $git_daemon_default
-    /etc/init.d/git-daemon start
-}
-
 repo_init () {
     cluster_configs="$HOME/generated_cluster_configs/swift-acct$account_number-$account_nick"
     st1=0 ; st2=0 ; st3=0
@@ -111,15 +108,15 @@ if [[ $? -gt 0 ]]; then
     exit 1
 fi
 
-printf "\n\t. Setting up & Starting up git-daemon service"
-setup_git_daemon
-
 printf "\n\t. Syncing admin configs %s into root / " "$git_repo_loc/admin"
 retc=$(rsync -aq0cn --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ / &>/dev/null; echo $?)
 if [[ $retc -gt 0 ]]; then 
     printf "\n\tError: rsync issues found\n\n"
     exit 1
 fi
+
+printf "\n\t. Setting up & Starting up git-daemon service"
+/etc/init.d/git-daemon start 
 
 printf "\n - AdminBox setup ... Done \n\n"
 
