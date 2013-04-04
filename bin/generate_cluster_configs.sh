@@ -114,6 +114,7 @@ generate_configs () {
         rsync -aq0c $temp_dir/common/ $loc_dir/$i/ 
         rsync -aq0c $temp_dir/$i/ $loc_dir/$i/ 
     done
+    rm -rf $temp_dir
 
     return 0
 }
@@ -125,15 +126,15 @@ generate_configs () {
 repo_name="swift-acct$account_number-$account_nick"
 printf "\n - Generating swift cluster configs:"
 if [[ ! -d "$generated_cluster_configs/""$repo_name" ]]; then 
-    printf "\n    Account: %s \n" "$account_number"   
-    printf "\n    Customer: %s \n" "$account_name"   
-    printf "\n    Destination: %s/%s \n" "$generated_cluster_configs" "$repo_name"  
+    printf "\n   Account: %s " "$account_number"   
+    printf "\n   Customer: %s " "$account_name"   
+    printf "\n   Destination: %s/%s " "$generated_cluster_configs" "$repo_name"  
 
     generate_configs 
     if [[ $? ]]; then 
-        printf "\n   Swift cluster configs have been generated"
+        printf "\n\n Swift cluster configs have been generated"
     else 
-        printf "\n   Failed: Swift cluster configs failed to be generated \n\n"
+        printf "\n\n Failed: Swift cluster configs failed to be generated \n\n"
         exit 1
     fi
 else
