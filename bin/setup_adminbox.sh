@@ -101,7 +101,7 @@ apt_install
 printf "\n\t. Initializing swift-cluster-configs repository"
 retc=repo_init
 
-if [[ $retc -qt 0 ]]; then 
+if [[ $retc -gt 0 ]]; then 
     printf "\n\tError: git repo initialization not successful (returned code: %s) " "$retc"
     printf "\n\tPath: %s" "$git_repo_loc"
     exit 1
@@ -111,7 +111,7 @@ printf "\n\t. Setting up & Starting up git-daemon service"
 setup_git_daemon
 
 printf "\n\t. Syncing admin configs %s into root / " "$git_repo_loc/admin"
-rsync -aq0c --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ /
+rsync -aq0cn --exclude=".git" --exclude=".ignore" $git_repo_loc/admin/ /
 
 printf "\n - AdminBox setup ... Done"
 
