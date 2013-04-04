@@ -103,7 +103,7 @@ generate_configs () {
     rsync_check
 
     temp_dir=$(mktemp -d)
-    rsync -aq0c $template_dir/ $temp_dir/
+    rsync -aq0c --exclude=".ignore" --exclude=".git" $template_dir/ $temp_dir/
     placeholder_changes $temp_dir
 
     loc_dir="$generated_cluster_configs/$repo_name"
