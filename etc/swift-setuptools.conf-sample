@@ -7,7 +7,6 @@
 account_number = 1000
 account_name = sampler
 account_nick = sampler
-account_info = 
 
 # Mailing Information for alerts
 email_addr = me@mydomain.com
