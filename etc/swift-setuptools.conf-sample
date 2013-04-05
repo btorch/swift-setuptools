@@ -1,0 +1,48 @@
+# Swift-setuptools Configuration File
+# This is used by some of the scripts
+# Just a draft for now
+
+[DEFAULT]
+# Customer Information 
+account_number = 1000
+account_name = sampler
+account_nick = sampler
+account_info = 
+
+# Mailing Information for alerts
+email_addr = me@mydomain.com
+pager_addr = mepager@mydomain.com
+smarthost = smart.mydomain.com
+outgoing_domain = swift.mydomain.com
+
+# Admin/Controller Info
+admin_ip = 172.16.0.3
+
+# Swift Ring Info
+swift_hash = supercrypthash
+ringserver_ip = 172.16.0.3
+
+# Swift Log Processing Info
+# This is the swift account hash e.g: AUTH_%HASH%
+processing_account = AUTH_nothingyet
+
+# Syslog Info
+syslogs_ip = 172.16.0.3
+
+# Memcache (proxy)
+memcache_maxmem = 2048
+sim_connections = 3072
+memcache_server_list = 127.0.0.1:11211
+
+# Informant Info
+informant_ip = 172.16.0.3
+
+# Keystone Info
+keystone_ip = 172.16.0.3
+keystone_port = 35357
+keystone_auth_proto = http
+keystone_auth_uri = http://172.16.0.3:5000/
+keystone_admin_tenant = Services
+keystone_admin_user = swif
+keystone_admin_key = noswift
+

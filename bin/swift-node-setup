@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import time
+import swiftst.common.utils as utils
+import swiftst.node.deploy as deploy
+import swiftst.consts as sc
+from optparse import OptionParser
+from fabric.api import *
+from fabric.network import *
+
+'''
+Setting up some environmental variables
+'''
+os.environ['LC_ALL'] = 'C'
+os.environ['LANG'] = 'en_US.UTF-8'
+
+'''
+Some parameters that are passed over on apt-get installs
+'''
+apt_opts = ' -y -qq --force-yes -o Dpkg::Options::=--force-confdef '
+
+'''
+Keyring packages that might be needed
+'''
+keyrings = ['ubuntu-cloud-keyring']
+
+'''
+Utilities that will be install on all systems by the common setup
+'''
+general_tools = ['python-software-properties', 'patch', 'debconf',
+                 'bonnie++', 'dstat', 'python-configobj', 'curl',
+                 'subversion', 'git-core', 'iptraf', 'htop',
+                 'nmon', 'strace', 'iotop', 'debsums']
+
+'''
+Dictionary that contains system:packages that will be installed
+for swift according to each system functionality
+'''
+packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
+            'proxy': ['swift-proxy'],
+            'storage': ['swift-account', 'swift-container', 'swift-object'],
+            'saio': ['swift-proxy', 'swift-account', 'swift-container',
+                     'swift-object'],
+            'other': ['python-suds', 'python-slogging']
+            }
+
+
+def main():
+    '''
+    Main function
+    '''
+    parser = OptionParser(add_help_option=False)
+    parser.add_option("-h", "--help", action="help")
+    parser.add_option("-p", "--platform",
+       action="store", type="string",
+       default=None, dest="platform",
+       help="Platform Type (default: None, options: dell)"
+    )
+    parser.add_option("-r", "--release",
+        action="store", type="string",
+        default="precise", dest="release",
+        help='''Distribution release version (default:
+                precise, options: lucid, precise)'''
+    )
+    parser.add_option("-t", "--type",
+        action="store", type="string",
+        default="generic", dest="sys_type",
+        help='''Swift system (options: proxy, storage,
+                saio, generic, lb, syslog) Please note
+                these must be dsh groups as well'''
+    )
+    parser.add_option("-c", "--core",
+        action="store", type="string",
+        default=False, dest="core",
+        help="Use central core information (default: False) "
+    )
+    parser.add_option("-H", "--host",
+        action="store", type="string",
+        default=None, dest="single_host",
+        help="Single host to run the setup against (default: None)"
+    )
+    parser.add_option("-g", "--dsh-group",
+        action="store", type="string",
+        default=None, dest="dsh_group",
+        help='''Uses the indicated dsh group instead of trying
+                to use a group that matches the system type to be
+                deployed. Use with care and make sure the group exists
+                (default: None)'''
+    )
+    (options, args) = parser.parse_args()
+
+    '''
+    If a host is provided than the setup will
+    only happen on this single host as desired
+    '''
+    if options.single_host:
+        host_list = [options.single_host, ]
+    elif options.dsh_group:
+        host_list = utils.generate_hosts_list(options.dsh_group)
+    else:
+        host_list = utils.generate_hosts_list(options.sys_type)
+
+    '''
+    Tasks that would be executed on most nodes with
+    perhaps exception of the load balancers
+    '''
+    execute(utils.add_keyrings, hosts=host_list)
+    execute(utils.setup_swiftuser, hosts=host_list)
+    execute(deploy.common_setup, options, hosts=host_list)
+
+    if 'generic' in options.sys_type:
+        execute(deploy.swift_generic_setup, options.sys_type, hosts=host_list)
+
+    if 'proxy' in options.sys_type:
+        execute(deploy.swift_proxy_setup, options.sys_type, hosts=host_list)
+
+    if 'storage' in options.sys_type:
+        execute(deploy.swift_storage_setup, options.sys_type, hosts=host_list)
+
+    if 'saio' in options.sys_type:
+        execute(deploy.swift_saio_setup, options.sys_type, hosts=host_list)
+
+    return 0
+
+
+if __name__ == '__main__':
+    status = main()
+    disconnect_all()
+    sys.exit(status)
