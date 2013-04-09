@@ -87,3 +87,15 @@ def final_touches(sys_type=''):
         if not check.succeeded:
             sudo('mkdir -p /var/log/swift/stats')
         sudo('chown swift.swift /var/log/swift/stats')
+
+
+def check_installed(packages):
+    '''
+    This function will install an utility if not preset
+    '''
+    for name in packages:
+        with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+            c = local('apt-cache show %s ' % name, capture=True)
+            if c.failed: 
+                local('apt-get install %s %s' % (sc.apt_opts, name))
+    return True
