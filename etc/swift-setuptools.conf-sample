@@ -29,8 +29,8 @@ processing_account = AUTH_nothingyet
 syslogs_ip = 172.16.0.3
 
 # Memcache (proxy)
-memcache_maxmem = 2048
-sim_connections = 3072
+memcache_maxmem = 512
+sim_connections = 1024
 memcache_server_list = 127.0.0.1:11211
 
 # Informant Info
@@ -44,4 +44,8 @@ keystone_auth_uri = http://172.16.0.3:5000/
 keystone_admin_tenant = Services
 keystone_admin_user = swif
 keystone_admin_key = noswift
+
+[generate-configs]
+template_dir = /etc/swift-setuptools/templates
+generated_configs = /etc/swift-setuptools/generated_cluster_configs
 
