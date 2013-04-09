@@ -74,7 +74,8 @@ def main():
     dest_dir = generated_configs + '/' + name
     temp_dir = tempfile.mkdtemp()
 
-    if not utils.check_installed():
+    pkgs = ['rsync', 'git', 'git-core']
+    if not utils.check_installed(pkgs):
         status = 500
         msg = 'Error on checking installed packages'
         raise ResponseError(status, msg)
