@@ -7,7 +7,7 @@ import shutil
 import swiftst.consts as sc
 import swiftst.common.config as config
 import swiftst.common.utils as utils
-from swiftst.exceptions import TemplateFileError
+from swiftst.exceptions import TemplateFileError, ResponseError
 from optparse import OptionParser
 from fabric.api import *
 from string import Template
