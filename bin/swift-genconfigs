@@ -47,7 +47,7 @@ def template_changes(tdir, templates, conf):
     else:
         return False
 
-                    
+
 def main():
     '''
     Main function
@@ -59,7 +59,7 @@ def main():
         default="/etc/swift-setuptools/swift-setuptools.conf",
         dest="config",
         help='''
-             Path to config file (default: 
+             Path to config file (default:
              /etc/swift-setuptools/swift-setuptools.conf)
              '''
     )
@@ -74,7 +74,7 @@ def main():
     dest_dir = generated_configs + '/' + name
     temp_dir = tempfile.mkdtemp()
 
-    if not check_installed():
+    if not utils.check_installed():
         status = 500
         msg = 'Error on checking installed packages'
         raise ResponseError(status, msg)
