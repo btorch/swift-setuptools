@@ -81,6 +81,7 @@ def main():
         raise ResponseError(status, msg)
 
     try:
+        os.mkdir(generated_configs)
         os.mkdir(dest_dir)
     except Exception as e:
         (status, msg) = e.args
