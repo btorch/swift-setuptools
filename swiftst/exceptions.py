@@ -1,5 +1,6 @@
 """ See COPYING for license information """
 
+
 class Error(StandardError):
     """
     Base class for all errors and exceptions
