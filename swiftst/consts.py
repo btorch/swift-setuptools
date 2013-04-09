@@ -16,7 +16,7 @@ Utilities that will be install on all systems by the common setup
 general_tools = ['python-software-properties', 'patch', 'debconf',
                  'bonnie++', 'dstat', 'python-configobj', 'curl',
                  'subversion', 'git-core', 'iptraf', 'htop',
-                 'nmon', 'strace', 'iotop', 'debsums','python-pip']
+                 'nmon', 'strace', 'iotop', 'debsums', 'python-pip']
 
 '''
 Dictionary that contains system:packages that will be installed
@@ -57,5 +57,4 @@ templates = {'common/etc/aliases': ('EMAIL_ADDR', 'PAGER_ADDR'),
              'admin/etc/swift/dispersion.conf': ('KEYSTONE_AUTH_URI',
                                                  'KEYSTONE_ADMIN_TENANT',
                                                  'KEYSTONE_ADMIN_USER',
-                                                 'KEYSTONE_ADMIN_KEY')
-            }
+                                                 'KEYSTONE_ADMIN_KEY')}

@@ -5,6 +5,7 @@ from swiftst.exceptions import HostListError
 from fabric.api import *
 from fabric.network import *
 
+
 def generate_hosts_list(dsh_group):
     '''
     Generates the list of hosts from a dsh group
@@ -28,7 +29,7 @@ def generate_hosts_list(dsh_group):
             raise HostListError(status, msg)
     except:
         status = 404
-        msg = "Problem reading dsh file (%s)" % dsh_file 
+        msg = "Problem reading dsh file (%s)" % dsh_file
         raise HostListError(status, msg)
 
     if host_list:
@@ -96,6 +97,6 @@ def check_installed(packages):
     for name in packages:
         with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
             c = local('apt-cache show %s ' % name, capture=True)
-            if c.failed: 
+            if c.failed:
                 local('apt-get install %s %s' % (sc.apt_opts, name))
     return True

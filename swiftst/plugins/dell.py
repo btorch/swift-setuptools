@@ -4,6 +4,7 @@ import swiftst.consts as sc
 from fabric.api import *
 from fabric.network import *
 
+
 def deploy_tools():
     '''
     This function will add the Dell ubuntu repo file, then
@@ -15,7 +16,6 @@ def deploy_tools():
          echo "deb http://linux.dell.com/repo/community/deb/latest /" >
          /etc/apt/sources.list.d/linux.dell.com.sources.list
         ''')
-    
     sudo('gpg --list-keys >/dev/null')
     sudo('''
          gpg --keyserver pool.sks-keyservers.net

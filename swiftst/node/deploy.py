@@ -5,6 +5,7 @@ import swiftst.common.utils as utils
 from fabric.api import *
 from fabric.network import *
 
+
 def common_setup(options):
     '''
     This function will perform some setups that are common among all
