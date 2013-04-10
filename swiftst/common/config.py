@@ -71,4 +71,17 @@ def parse_config(configfile):
         msg = "No section found for generate-configs in the config file"
         raise ConfigFileError(status, msg)
 
+admin-system
+
+    if c.has_section('admin-system'):
+        conf = dict(c.items('admin-system'))
+        results['repository_system'] = conf.get('repository_system', 'git')
+        results['repository_base'] = conf.get('repository_base', '/srv/git')
+        results['repository_name'] = conf.get('repository_name',
+                                              'swift-cluster-configs')
+    else:
+        status = 404
+        msg = "No section found for admin-system in the config file"
+        raise ConfigFileError(status, msg)
+
     return results
