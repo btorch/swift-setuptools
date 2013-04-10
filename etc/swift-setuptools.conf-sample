@@ -49,3 +49,9 @@ keystone_admin_key = noswift
 template_dir = /etc/swift-setuptools/templates
 generated_configs = /etc/swift-setuptools/generated_cluster_configs
 
+[admin-system]
+# Currently only git repos
+admin_ip = 172.16.10.3
+repository_system = git
+repository_base = /srv/git
+repository_name = swift-cluster-configs
