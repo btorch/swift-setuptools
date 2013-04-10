@@ -54,6 +54,7 @@ def main():
     '''
     parser = OptionParser(add_help_option=False)
     parser.add_option("-h", "--help", action="help")
+    parser.add_option("-v", action="store_true", dest="verbose")
     parser.add_option("-c", "--conf",
         action="store", type="string",
         default="/etc/swift-setuptools/swift-setuptools.conf",
@@ -82,9 +83,16 @@ def main():
 
     try:
         os.mkdir(generated_configs)
+    except:
+        status = 500
+        msg = "Directory already exits (%s)" % generated_configs
+        raise ResponseError(status, msg)
+
+    try:
         os.mkdir(dest_dir)
     except Exception as e:
-        (status, msg) = e.args
+        status = 500
+        msg = "Directory already exits (%s)" % dest_dir
         raise ResponseError(status, msg)
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
@@ -102,6 +110,9 @@ def main():
                     local('rsync -aq0c %s/common/ %s/' % (temp_dir, dst))
                     local('rsync -aq0c %s/ %s/' % (src, dst))
 
+    if options.verbose:
+        print "\n\t Generated Location: %s \n" % dest_dir
+        
     shutil.rmtree(temp_dir)
     return 0
 
