@@ -8,13 +8,21 @@ The purpose of this python package is to help on deployinng a multi-node swift s
     - A user (e.g:swiftops) with ssh-key access to all other nodes and sudo privs
     - The storage node must already have all drives attached and available to the system
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 844c10cb90774641788eb39891735933f1b64d19
 * Swift Environment Assumption
     - A Swift Admin box (MUST HAVE)
     - 3 or more swift nodes
 
+<<<<<<< HEAD
     * Depending on your setup/wishes 3 swift nodes using a SAIO setup is the minimal setup.
     * One can scale as needed, example: 1+ proxy + 5 storage nodes (acc, cont, obj)
+=======
+    Depending on your setup/wishes 3 swift nodes using a SAIO setup is the minimal setup.
+    But you can scale to whatever you want, eg: 1+ proxy + 5 storage nodes (acc, cont, obj)
+>>>>>>> 844c10cb90774641788eb39891735933f1b64d19
 
 * How its designed
 
@@ -40,5 +48,9 @@ just creates a git repo under /srv/git using the config files generated as the s
 also setups git-daemon so that the git repo is available from each swift node.
  
 
+<<<<<<< HEAD
+=======
+    - Step 1: Use the 
+>>>>>>> 844c10cb90774641788eb39891735933f1b64d19
 
 
