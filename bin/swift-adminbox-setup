@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import swiftst.common.utils as utils
+import swiftst.common.config as config
 import swiftst.node.deploy as deploy
 import swiftst.consts as sc
 from optparse import OptionParser
