@@ -155,7 +155,7 @@ def adminbox_setup(conf):
         Now sync the admin configs over to the system itself
         and then restart services like git-daemon and nginx
         '''
-        if os.path.exits(dst_loc + '/admin')
+        if os.path.exits(dst_loc + '/admin'):
             c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
                       % (dst_loc + '/admin'))
             if c.failed:
