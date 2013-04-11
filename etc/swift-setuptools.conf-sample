@@ -13,6 +13,9 @@ email_addr = me@mydomain.com
 pager_addr = mepager@mydomain.com
 smarthost = smart.mydomain.com
 outgoing_domain = swift.mydomain.com
+# This would just be used by the smarthost 
+# relay if one needs to be setup
+relay_nets = 172.0.0.0/8
 
 # Admin/Controller Info
 admin_ip = 172.16.0.3
