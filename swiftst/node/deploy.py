@@ -162,13 +162,13 @@ def adminbox_setup(conf):
                 msg = 'Error syncing admin files from repo to /'
                 raise ResponseError(status, msg)
         
-        c = local('sudo service git-daemon restart')
+        c = local('service git-daemon restart')
         if c.failed:
             status = 500
             msg = 'Error restarting git-daemon'
             raise ResponseError(status, msg)
                 
-        c = local('sudo service nginx restart')
+        c = local('service nginx restart')
         if c.failed:
             status = 500
             msg = 'Error restarting nginx'
