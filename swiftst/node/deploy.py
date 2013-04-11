@@ -96,7 +96,8 @@ def adminbox_setup(conf):
     Setups up the admin box
     '''
     pkgs = ['rsync', 'dsh', 'git', 'git-core', 'git-daemon-run', 'nginx'
-            'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',]
+            'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',
+            'snmpd', 'snmp']
     
     if not utils.check_installed(pkgs):
         status = 500
