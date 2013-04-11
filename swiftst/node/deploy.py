@@ -99,9 +99,8 @@ def adminbox_setup(conf):
             'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
     
-    for name in pkgs:
-        with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-            local('apt-get install %s %s' % (sc.apt_opts, name))
+    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+        local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
     Create and initialize repository    
