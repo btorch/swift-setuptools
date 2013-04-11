@@ -71,8 +71,6 @@ def parse_config(configfile):
         msg = "No section found for generate-configs in the config file"
         raise ConfigFileError(status, msg)
 
-admin-system
-
     if c.has_section('admin-system'):
         conf = dict(c.items('admin-system'))
         results['repository_system'] = conf.get('repository_system', 'git')
