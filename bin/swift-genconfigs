@@ -110,6 +110,12 @@ def main():
                     local('rsync -aq0c %s/common/ %s/' % (temp_dir, dst))
                     local('rsync -aq0c %s/ %s/' % (src, dst))
 
+                'For SAIO'
+                dst_saio = dest_dir + '/saio/'
+                local('rsync -aq0c %s/common/ %s' % (temp_dir, dst_saio))
+                local('rsync -aq0c %s/proxy/ %s' % (temp_dir, dst_saio))
+                local('rsync -aq0c %s/storage/ %s' % (temp_dir, dst_saio))
+
     if options.verbose:
         print "\n\t Generated Location: %s \n" % dest_dir
 
