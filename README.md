@@ -1,5 +1,9 @@
 swift-setuptools
 ================
+
+* This is a rough draft just to get things going with scripts and modules
+* On version 2 things will be redesigned and classes added to the modules and creation of a single utility with commands
+* Package and repo name will also change
  
 The purpose of this python package is to help on deployinng a multi-node swift setup. 
 
