@@ -112,7 +112,7 @@ def main():
 
     if options.verbose:
         print "\n\t Generated Location: %s \n" % dest_dir
-        
+
     shutil.rmtree(temp_dir)
     return 0
 

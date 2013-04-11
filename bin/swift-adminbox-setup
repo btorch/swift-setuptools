@@ -35,13 +35,12 @@ def main():
     (options, args) = parser.parse_args()
     conf = config.parse_config([options.config, ])
 
-
     '''
-    For now this should be running from within 
+    For now this should be running from within
     the admin box itself. Later I'll look into
     remote setup.
     '''
-    
+
     ret = deploy.adminbox_setup(conf)
     if ret:
         if oprtions.verbose:
