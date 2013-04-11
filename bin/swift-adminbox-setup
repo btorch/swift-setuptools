@@ -44,7 +44,7 @@ def main():
 
     ret = deploy.adminbox_setup(conf)
     if ret:
-        if oprtions.verbose:
+        if options.verbose:
             print '\n\tAdmin box has been setup\n'
     else:
         print '\n\tHmm someting weird happened!!!\n'
