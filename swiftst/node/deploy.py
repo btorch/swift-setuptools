@@ -95,8 +95,8 @@ def adminbox_setup(conf):
     '''
     Setups up the admin box
     '''
-    pkgs = ['rsync', 'dsh', 'git', 'git-core', 'git-daemon-run', 'nginx',
-            'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',
+    pkgs = ['rsync', 'dsh', 'git', 'git-core', 'nginx', 'subversion',
+            'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
     
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
