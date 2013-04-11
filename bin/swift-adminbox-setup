@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import time
+import swiftst.common.utils as utils
+import swiftst.node.deploy as deploy
+import swiftst.consts as sc
+from optparse import OptionParser
+from fabric.api import *
+
+'''
+Setting up some environmental variables
+'''
+os.environ['LC_ALL'] = 'C'
+os.environ['LANG'] = 'en_US.UTF-8'
+
+
+def main():
+    '''
+    Main function
+    '''
+    parser = OptionParser(add_help_option=False)
+    parser.add_option("-h", "--help", action="help")
+    parser.add_option("-v", action="store_true", dest="verbose")
+    parser.add_option("-c", "--conf",
+        action="store", type="string",
+        default="/etc/swift-setuptools/swift-setuptools.conf",
+        dest="config",
+        help='''
+             Path to config file (default:
+             /etc/swift-setuptools/swift-setuptools.conf)
+             '''
+    )
+    (options, args) = parser.parse_args()
+    conf = config.parse_config([options.config, ])
+
+
+    '''
+    For now this should be running from within 
+    the admin box itself. Later I'll look into
+    remote setup.
+    '''
+    
+    ret = deploy.adminbox_setup(conf)
+    if ret:
+        if oprtions.verbose:
+            print '\n\tAdmin box has been setup\n'
+    else:
+        print '\n\tHmm someting weird happened!!!\n'
+
+    return 0
+
+
+if __name__ == '__main__':
+    status = main()
+    sys.exit(status)
