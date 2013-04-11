@@ -99,10 +99,9 @@ def adminbox_setup(conf):
             'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
     
-    if not utils.check_installed(pkgs):
-        status = 500
-        msg = 'Issues found during check_installed on admin setup'
-        raise ResponseError(status, msg)            
+    for name in pkgs:
+        with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+            local('apt-get install %s %s' % (sc.apt_opts, name))
 
     '''
     Create and initialize repository    
