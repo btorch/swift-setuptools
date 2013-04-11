@@ -1,9 +1,11 @@
 """ See COPYING for license information """
 
+import os
 import swiftst.consts as sc
 import swiftst.common.utils as utils
 from fabric.api import *
 from fabric.network import *
+from swiftst.exceptions import ResponseError 
 
 
 def common_setup(options):
@@ -86,3 +88,90 @@ def swift_saio_setup(node_type):
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         swift_node_setup(node_type)
+
+
+@task
+def adminbox_setup(conf):
+    '''
+    Setups up the admin box
+    '''
+    pkgs = ['rsync', 'dsh', 'git', 'git-core', 'git-daemon-run', 'nginx'
+            'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',]
+    
+    if not utils.check_installed(pkgs):
+        status = 500
+        msg = 'Issues found during check_installed on admin setup'
+        raise ResponseError(status, msg)            
+
+    '''
+    Create and initialize repository    
+    '''    
+    name = 'swift-acct' + conf['account_number'] + '-' + conf['account_nick']
+    src_loc = conf['genconfigs'] + '/' + name
+    dst_loc = conf['repository_base'] + '/' + conf['repository_name']
+
+    if not os.path.exits(src_loc):
+        status = 500
+        msg = 'Source directory does not exit (%s)' % src_loc
+        raise ResponseError(status, msg)
+    
+    if not os.path.exits(conf['repository_base']):
+        try:
+            os.mkdir(conf['repository_base'])
+        except Exception as e:
+            (status, msg) = e.args
+            raise ResponseError(status, msg)
+
+    if os.path.exits(dst_loc):
+        status = 500
+        msg = 'Repository destination already seems to exist (%s)' % dst_loc
+        raise ResponseError(status, msg)
+
+    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):     
+        c = local('rsync -aq0c %s/ %s' % (src_loc, dst_loc))
+        if c.failed:
+            status = 500
+            msg = 'Rsync of %s to %s has failed' % (src_loc, dst_loc)
+            raise ResponseError(status, msg)
+
+        try:
+            'This sucks really wanted to use a python git api'
+            pwd = os.getcwd()
+            local('git init -q %s' % dst_loc)
+            os.chdir(dst_loc)
+            local('git add .')
+            local('git commit -q -m "initial commit" -a')
+            os.chdir(pwd)
+        except Exception as e:
+            if len(e.args) < 2:
+                status = 500
+                msg = e.args
+            else:
+                (status, msg) = e.args
+            raise ResponseError(status, msg)
+
+        '''
+        Now sync the admin configs over to the system itself
+        and then restart services like git-daemon and nginx
+        '''
+        if os.path.exits(dst_loc + '/admin')
+            c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
+                      % (dst_loc + '/admin'))
+            if c.failed:
+                status = 500
+                msg = 'Error syncing admin files from repo to /'
+                raise ResponseError(status, msg)
+        
+        c = local('sudo service git-daemon restart')
+        if c.failed:
+            status = 500
+            msg = 'Error restarting git-daemon'
+            raise ResponseError(status, msg)
+                
+        c = local('sudo service nginx restart')
+        if c.failed:
+            status = 500
+            msg = 'Error restarting nginx'
+            raise ResponseError(status, msg)
+
+    return True
