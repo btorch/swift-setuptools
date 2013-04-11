@@ -95,7 +95,7 @@ def adminbox_setup(conf):
     '''
     Setups up the admin box
     '''
-    pkgs = ['rsync', 'dsh', 'git', 'git-core', 'git-daemon-run', 'nginx'
+    pkgs = ['rsync', 'dsh', 'git', 'git-core', 'git-daemon-run', 'nginx',
             'subversion', 'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
     
@@ -111,19 +111,19 @@ def adminbox_setup(conf):
     src_loc = conf['genconfigs'] + '/' + name
     dst_loc = conf['repository_base'] + '/' + conf['repository_name']
 
-    if not os.path.exits(src_loc):
+    if not os.path.exists(src_loc):
         status = 500
         msg = 'Source directory does not exit (%s)' % src_loc
         raise ResponseError(status, msg)
     
-    if not os.path.exits(conf['repository_base']):
+    if not os.path.exists(conf['repository_base']):
         try:
             os.mkdir(conf['repository_base'])
         except Exception as e:
             (status, msg) = e.args
             raise ResponseError(status, msg)
 
-    if os.path.exits(dst_loc):
+    if os.path.exists(dst_loc):
         status = 500
         msg = 'Repository destination already seems to exist (%s)' % dst_loc
         raise ResponseError(status, msg)
@@ -155,7 +155,7 @@ def adminbox_setup(conf):
         Now sync the admin configs over to the system itself
         and then restart services like git-daemon and nginx
         '''
-        if os.path.exits(dst_loc + '/admin'):
+        if os.path.exists(dst_loc + '/admin'):
             c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
                       % (dst_loc + '/admin'))
             if c.failed:
