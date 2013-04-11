@@ -96,7 +96,7 @@ def check_installed(packages):
     '''
     for name in packages:
         with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-            c = local('apt-cache show %s ' % name, capture=True)
+            c = local('dpkg -s %s' % name, capture=True)
             if c.failed:
                 local('apt-get install %s %s' % (sc.apt_opts, name))
     return True
