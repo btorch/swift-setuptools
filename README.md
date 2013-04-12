@@ -16,6 +16,14 @@ Requirements
 * The storage node must already have all drives attached and available to the system
 
 
+Alert
+--------
+Since git does not keep file permissions after cloned, some file attributes may change and that can be a pain.
+I believe there may be ways to make the git repo remember file permissions but I'm not planning on adding that.
+The only file that cause issues to fabric and other tools is /etc/sudoers and it's the only file I reset to have
+the proper permissions back.
+
+
 Swift Environment Assumption
 -------------------------------
 * A Swift Admin box (MUST HAVE)

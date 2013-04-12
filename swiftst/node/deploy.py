@@ -156,8 +156,9 @@ def adminbox_setup(conf):
         and then restart services like git-daemon and nginx
         '''
         if os.path.exists(dst_loc + '/admin'):
-            c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
-                      % (dst_loc + '/admin'))
+            c = local('''rsync -aq0c --exclude=".git" --exclude=".ignore"
+                         %s/ / ; chmod 0440 /etc/sudoers
+                      ''' % (dst_loc + '/admin'))
             if c.failed:
                 status = 500
                 msg = 'Error syncing admin files from repo to /'
