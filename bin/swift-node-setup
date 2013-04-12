@@ -6,6 +6,7 @@ import time
 import swiftst.common.utils as utils
 import swiftst.node.deploy as deploy
 import swiftst.consts as sc
+import swiftst.common.config as config
 from optparse import OptionParser
 from fabric.api import *
 from fabric.network import *
@@ -15,36 +16,6 @@ Setting up some environmental variables
 '''
 os.environ['LC_ALL'] = 'C'
 os.environ['LANG'] = 'en_US.UTF-8'
-
-'''
-Some parameters that are passed over on apt-get installs
-'''
-apt_opts = ' -y -qq --force-yes -o Dpkg::Options::=--force-confdef '
-
-'''
-Keyring packages that might be needed
-'''
-keyrings = ['ubuntu-cloud-keyring']
-
-'''
-Utilities that will be install on all systems by the common setup
-'''
-general_tools = ['python-software-properties', 'patch', 'debconf',
-                 'bonnie++', 'dstat', 'python-configobj', 'curl',
-                 'subversion', 'git-core', 'iptraf', 'htop',
-                 'nmon', 'strace', 'iotop', 'debsums']
-
-'''
-Dictionary that contains system:packages that will be installed
-for swift according to each system functionality
-'''
-packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
-            'proxy': ['swift-proxy'],
-            'storage': ['swift-account', 'swift-container', 'swift-object'],
-            'saio': ['swift-proxy', 'swift-account', 'swift-container',
-                     'swift-object'],
-            'other': ['python-suds', 'python-slogging']
-            }
 
 
 def main():
@@ -71,10 +42,14 @@ def main():
                 saio, generic, lb, syslog) Please note
                 these must be dsh groups as well'''
     )
-    parser.add_option("-c", "--core",
+    parser.add_option("-c", "--conf",
         action="store", type="string",
-        default=False, dest="core",
-        help="Use central core information (default: False) "
+        default="/etc/swift-setuptools/swift-setuptools.conf",
+        dest="config",
+        help='''
+             Path to config file (default:
+             /etc/swift-setuptools/swift-setuptools.conf)
+             '''
     )
     parser.add_option("-H", "--host",
         action="store", type="string",
@@ -90,6 +65,7 @@ def main():
                 (default: None)'''
     )
     (options, args) = parser.parse_args()
+    conf = config.parse_config([options.config, ])
 
     '''
     If a host is provided than the setup will
@@ -121,6 +97,8 @@ def main():
 
     if 'saio' in options.sys_type:
         execute(deploy.swift_saio_setup, options.sys_type, hosts=host_list)
+
+    execute(utils.pull_configs, options.sys_type, conf, hosts=host_list)
 
     return 0
 
