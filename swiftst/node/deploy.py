@@ -3,7 +3,6 @@
 import os
 import swiftst.consts as sc
 import swiftst.common.utils as utils
-import swiftst.node.deploy as deploy
 from fabric.api import *
 from fabric.network import *
 from swiftst.exceptions import ResponseError
@@ -102,8 +101,8 @@ def adminbox_setup(conf):
     '''
     execute(utils.add_keyrings, host='127.0.0.1')
     execute(utils.setup_swiftuser, host='127.0.0.1')
-    execute(deploy.common_setup, host='127.0.0.1')
-    execute(deploy.swift_generic_setup, ['generic'], host='127.0.0.1')
+    execute(common_setup, host='127.0.0.1')
+    execute(swift_generic_setup, ['generic'], host='127.0.0.1')
 
     '''
     Create and initialize repository    
