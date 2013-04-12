@@ -6,7 +6,7 @@ import swiftst.common.utils as utils
 import swiftst.node.deploy as deploy
 from fabric.api import *
 from fabric.network import *
-from swiftst.exceptions import ResponseError 
+from swiftst.exceptions import ResponseError
 
 
 def common_setup():
@@ -88,7 +88,7 @@ def adminbox_setup(conf):
     pkgs = ['rsync', 'dsh', 'git', 'git-core', 'nginx', 'subversion',
             'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
-    
+
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
 
