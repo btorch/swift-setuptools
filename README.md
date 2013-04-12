@@ -37,7 +37,7 @@ location where you will be able check, add, delete, modify the configs, crons, s
 2. Create a new /etc/swift-setuptools/swift-setuptools.conf from the swift-setuptools.conf-sample provided
 
 3. Run swift-genconfigs in order to generate the swift environment files from the templates
-   - The location /etc/swift-setuptools/generated_cluster_configs will be created
+ * The location /etc/swift-setuptools/generated_cluster_configs will be created
 
 4. Check, Add, Delete, Modify files located under the generated directory above fit your needs
 
