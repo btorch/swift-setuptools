@@ -107,10 +107,12 @@ def pull_configs(sys_type, conf):
     This function will git clone the repo on the admin box
     and then sync it over to the root
     '''
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+    with settings(hide('running', 'stdout', 'stderr', 'warnings'),
+                  warn_only=True):
         if run('test -d /root/local').succeeded:
             sudo('mv /root/local /root/local.old')
 
+    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         loc_dir = '/root/local/' + sys_type
         sudo('git clone git://%s/%s /root/local' % (conf['admin_ip'],
                                                     conf['repository_name']))
