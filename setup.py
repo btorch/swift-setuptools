@@ -35,5 +35,5 @@ setup(
     install_requires=install_requires,
     scripts=['bin/swift-node-setup',
              'bin/swift-genconfigs',
-             'bin/swift-admin-setup',],
+             'bin/swift-adminbox-setup',],
     data_files = data_files)
