@@ -84,7 +84,7 @@ def main():
     '''
     execute(utils.add_keyrings, hosts=host_list)
     execute(utils.setup_swiftuser, hosts=host_list)
-    execute(deploy.common_setup, options, hosts=host_list)
+    execute(deploy.common_setup, hosts=host_list)
 
     if 'generic' in options.sys_type:
         execute(deploy.swift_generic_setup, options.sys_type, hosts=host_list)
