@@ -108,6 +108,9 @@ def pull_configs(sys_type, conf):
     and then sync it over to the root
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+        if run('test -d /root/local').succeeded:
+            sudo('mv /root/local /root/local.old')
+
         loc_dir = '/root/local/' + sys_type
         sudo('git clone git://%s/%s /root/local' % (conf['admin_ip'],
                                                     conf['repository_name']))
