@@ -3,12 +3,13 @@
 import os
 import swiftst.consts as sc
 import swiftst.common.utils as utils
+import swiftst.node.deploy as deploy
 from fabric.api import *
 from fabric.network import *
 from swiftst.exceptions import ResponseError 
 
 
-def common_setup(options):
+def common_setup():
     '''
     This function will perform some setups that are common among all
     systems
@@ -24,17 +25,6 @@ def common_setup(options):
         '''
         sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
              % (sc.apt_opts, ' '.join(sc.general_tools)))
-
-
-def do_swift_generic_setup():
-    '''
-    This function will only install some common
-    swift packages such as swift, python-swift and swift client
-    '''
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        sudo('apt-get install %s %s ' % (sc.apt_opts,
-                                         ' '.join(sc.packages['generic'])))
-        utils.place_on_hold(' '.join(sc.packages['generic']))
 
 
 def swift_node_setup(node_type):
@@ -101,6 +91,19 @@ def adminbox_setup(conf):
     
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
+
+    '''
+    This is really stupid but for now got do it... The swiftops user
+    needs to have it's own .pub rsa key in its own authorized_keys file.
+    Otherwise the remote commands won't work and keep on asking for password.
+    The work around this is to make each of the functions doing the setup
+    return a list of commands to be executed by another main task and there
+    once can decide if should be run remotely or local. TBD
+    '''
+    execute(utils.add_keyrings, host='127.0.0.1')
+    execute(utils.setup_swiftuser, host='127.0.0.1')
+    execute(deploy.common_setup, host='127.0.0.1')
+    execute(deploy.swift_generic_setup, ['generic'], host='127.0.0.1')
 
     '''
     Create and initialize repository    
