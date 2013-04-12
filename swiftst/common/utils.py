@@ -119,5 +119,5 @@ def pull_configs(sys_type, conf):
             status = 404
             msg = 'Directory was not found! (%s)' % loc_dir
             raise ConfigSyncError(status, msg)
-        sudo('''rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /
-                ; chmod 0440 /etc/sudoers''' % loc_dir)
+        sudo('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
+              % loc_dir)

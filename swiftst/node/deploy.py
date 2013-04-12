@@ -157,7 +157,7 @@ def adminbox_setup(conf):
         '''
         if os.path.exists(dst_loc + '/admin'):
             c = local('''rsync -aq0c --exclude=".git" --exclude=".ignore"
-                         %s/ / ; chmod 0440 /etc/sudoers
+                         %s/ /
                       ''' % (dst_loc + '/admin'))
             if c.failed:
                 status = 500
