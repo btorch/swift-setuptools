@@ -46,6 +46,7 @@ location where you will be able check, add, delete, modify the configs, crons, s
 
 3. Run swift-genconfigs in order to generate the swift environment files from the templates
  - The location /etc/swift-setuptools/generated_cluster_configs will be created
+ - 
 
 
 4. Check, Add, Delete, Modify files located under the generated directory above fit your needs
@@ -55,6 +56,7 @@ location where you will be able check, add, delete, modify the configs, crons, s
    - This will create a git repo from the generated_cluster_configs
    - Sync the admin configs over to the system root
    - Install some packages and startup git-daemon-run, nginx
+   - 
 
 
 6. Once the above is done, you can use the swift-node-setup utility to deploy swift nodes.
