@@ -82,4 +82,16 @@ def parse_config(configfile):
         msg = "No section found for admin-system in the config file"
         raise ConfigFileError(status, msg)
 
+    if c.has_section('swift-drives'):
+        conf = dict(c.items('swift-drives'))
+        results['swift_dir'] = conf.get('swift_dir', '/srv/node')
+        results['device_count'] = conf.get('device_count', 0)
+        results['device_pattern'] = conf.get('device_pattern',
+                                             'c[0-4]u([0-9]{1}|[1-9]{1}[0-9]+)p$')
+        results['device_exclusion'] = conf.get('device_exclusion', 'c0u0p')
+    else:
+        status = 404
+        msg = "No section found for swift-drives in the config file"
+        raise ConfigFileError(status, msg)
+
     return results
