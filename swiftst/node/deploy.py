@@ -8,6 +8,7 @@ from fabric.network import *
 from swiftst.exceptions import ResponseError
 
 
+@parallel(pool_size=5)
 def common_setup():
     '''
     This function will perform some setups that are common among all
@@ -47,6 +48,7 @@ def swift_node_setup(node_type):
         utils.final_touches(node_type)
 
 
+@parallel(pool_size=5)
 def swift_generic_setup(node_type):
     '''
     Really just a wrapper function identify task
@@ -55,6 +57,7 @@ def swift_generic_setup(node_type):
         swift_node_setup(node_type)
 
 
+@parallel(pool_size=5)
 def swift_proxy_setup(node_type):
     '''
     Really just a wrapper function identify task
@@ -63,6 +66,7 @@ def swift_proxy_setup(node_type):
         swift_node_setup(node_type)
 
 
+@parallel(pool_size=5)
 def swift_storage_setup(node_type):
     '''
     Really just a wrapper function identify task
@@ -71,6 +75,7 @@ def swift_storage_setup(node_type):
         swift_node_setup(node_type)
 
 
+@parallel(pool_size=5)
 def swift_saio_setup(node_type):
     '''
     Really just a wrapper function identify task
@@ -80,6 +85,7 @@ def swift_saio_setup(node_type):
 
 
 @task
+@serial
 def adminbox_setup(conf):
     '''
     Setups up the admin box

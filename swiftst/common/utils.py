@@ -1,7 +1,7 @@
 """ See COPYING for license information """
 
 import swiftst.consts as sc
-from swiftst.exceptions import HostListError, ConfigSyncError
+from swiftst.exceptions import HostListError, ConfigSyncError, DiskSetupError
 from fabric.api import *
 from fabric.network import *
 
@@ -40,6 +40,7 @@ def generate_hosts_list(dsh_group):
         raise HostListError(status, msg)
 
 
+@parallel(pool_size=5)
 def add_keyrings():
     '''
     installs any keyring package that is available in the dict
@@ -49,6 +50,7 @@ def add_keyrings():
         sudo('apt-get install %s %s' % (sc.apt_opts, ' '.join(sc.keyrings)))
 
 
+@parallel(pool_size=5)
 def setup_swiftuser():
     '''
     Setting up the user allows one to avoid issues when the UID
@@ -116,6 +118,7 @@ def svn_setup(conf):
     '''
 
 
+@parallel(pool_size=5)
 def pull_configs(sys_type, conf):
     '''
     This function will git clone the repo on the admin box

@@ -51,3 +51,11 @@ class TemplateFileError(ResponseError):
     manipulating a template file.
     """
     pass
+
+
+class DiskSetupError(ResponseError):
+    """
+    Raised when something goes wrong
+    setting up the disks.
+    """
+    pass
