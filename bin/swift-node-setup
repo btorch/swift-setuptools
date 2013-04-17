@@ -84,6 +84,7 @@ def main():
     '''
     execute(utils.add_keyrings, hosts=host_list)
     execute(utils.setup_swiftuser, hosts=host_list)
+    execute(utils.pull_configs, options.sys_type, conf, hosts=host_list)
     execute(deploy.common_setup, hosts=host_list)
 
     if 'generic' in options.sys_type:
@@ -97,8 +98,6 @@ def main():
 
     if 'saio' in options.sys_type:
         execute(deploy.swift_saio_setup, options.sys_type, hosts=host_list)
-
-    execute(utils.pull_configs, options.sys_type, conf, hosts=host_list)
 
     return 0
 
