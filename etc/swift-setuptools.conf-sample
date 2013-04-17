@@ -58,3 +58,10 @@ admin_ip = 172.16.10.3
 repository_system = git
 repository_base = /srv/git
 repository_name = swift-cluster-configs
+
+[swift-drives]
+swift_dir = /srv/node
+device_count = 45
+device_pattern = c[0-4]u([0-9]{1}|[1-9]{1}[0-9]+)p$
+device_exclusion = c0u0p 
+
