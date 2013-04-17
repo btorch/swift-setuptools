@@ -181,10 +181,11 @@ def disk_setup(conf):
                         break
 
                     if run('test -e /dev/%s' % dev).succeeded:
-                            sudo(cmd1 % dev)
-                            sudo(cmd2 % dev + cmd3 % dev)
-                            sudo(cmd4 % (label, dev))
-                            sudo(cmd5 % label)
+                        sudo(cmd1 % dev)
+                        sudo(cmd2 % dev + cmd3 % dev)
+                        sudo(cmd4 % (label, dev))
+                        sudo(cmd5 % label)
+
                         if run('grep "%s xfs" /etc/fstab' % label).failed:
                             cmd = cmd6 % (label, label)
                             sudo('echo %s >> /etc/fstab' % cmd)
