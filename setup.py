@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 from swiftst import __version__ as version
-from shutil import copytree
+from shutil import copytree, move
 import os
 
 name = "swift-setuptools"
