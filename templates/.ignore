@@ -1,6 +1,2 @@
-admin/
-common/
 lbs/
-proxy/
-storage/
 !.gitignore
