@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 from swiftst import __version__ as version
-from shutil import copytree, move
+from shutil import copytree, move, rmtree
 import os
 
 name = "swift-setuptools"
@@ -41,6 +41,9 @@ setup(
 src = 'templates'
 dst = '/etc/swift-setuptools/templates'
 if os.path.exists(dst):
-    move(dst, dst + '.old')
+    new_dst = dst + '.old'
+    if os.path.exists(new_dst):
+        rmtree(new_dst)
+    move(dst, new_dst)
 if os.path.exists('/etc/swift-setuptools'):
     copytree(src, dst) 
