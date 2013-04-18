@@ -1,5 +1,7 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 from swiftst import __version__ as version
+from shutil import copytree
+import os
 
 name = "swift-setuptools"
 
@@ -10,10 +12,8 @@ except ImportError:
     install_requires.append("fabric")
 
 data_files = [('/etc/swift-setuptools',
-               ['etc/swift-setuptools.conf-sample']),
-              ('/etc/swift-setuptools/templates',
-               ['templates/*'])]
-
+               ['etc/swift-setuptools.conf-sample'])]
+      
 setup(
     name = name,
     version = version,
@@ -23,7 +23,7 @@ setup(
     license = "Apache License, (2.0)",
     keywords = "openstack swift",
     url = "https://github.com/btorch/swift-setuptools",
-    packages=['swiftst'],
+    packages=find_packages(exclude=['bin']),
     classifiers=[
         'Development Status :: 1 - Beta',
         'License :: OSI Approved :: Apache Software License',
@@ -37,3 +37,10 @@ setup(
              'bin/swift-genconfigs',
              'bin/swift-adminbox-setup',],
     data_files = data_files)
+
+src = 'templates'
+dst = '/etc/swift-setuptools/templates'
+if os.path.exists(dst):
+    move(dst, dst + '.old')
+if os.path.exists('/etc/swift-setuptools'):
+    copytree(src, dst) 
