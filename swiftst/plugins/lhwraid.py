@@ -38,7 +38,7 @@ def lsi_tools():
     install_tools(tools)
 
 
-def 3ware_tools():
+def tware_tools():
     '''
     This function will install some tools for 3Ware
     '''
