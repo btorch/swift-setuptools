@@ -1,0 +1,6 @@
+[groups]
+admins = swiftops
+
+[/]
+* = r
+@admins = rw
