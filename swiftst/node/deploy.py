@@ -96,7 +96,7 @@ def adminbox_setup(conf):
             'snmpd', 'snmp']
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        local('sudo apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
+        local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
     This is really stupid but for now got do it... The swiftops user
