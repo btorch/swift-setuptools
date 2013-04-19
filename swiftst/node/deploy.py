@@ -89,13 +89,14 @@ def swift_saio_setup(node_type):
 def adminbox_setup(conf):
     '''
     Setups up the admin box
+    REALLY NEED TO FIX THIS
     '''
     pkgs = ['rsync', 'dsh', 'git', 'git-core', 'nginx', 'subversion',
             'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
+        local('sudo apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
     This is really stupid but for now got do it... The swiftops user
