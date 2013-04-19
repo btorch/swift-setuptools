@@ -43,6 +43,7 @@ def swift_node_setup(node_type):
         pkgs = ' '.join(sc.packages['generic'] + sc.packages[node_type])
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+        sudo('apt-get update -qq -o Acquire::http::No-Cache=True')
         sudo('apt-get install %s %s ' % (sc.apt_opts, pkgs))
         utils.place_on_hold(pkgs.split(' '))
         utils.final_touches(node_type)
