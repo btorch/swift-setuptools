@@ -24,7 +24,7 @@ Dictionary that contains system:packages that will be installed
 for swift according to each system functionality
 '''
 packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
-            'proxy': ['swift-proxy'],
+            'proxy': ['swift-proxy', 'python-keystoneclient'],
             'storage': ['swift-account', 'swift-container', 'swift-object'],
             'saio': ['swift-proxy', 'swift-account', 'swift-container',
                      'swift-object'],
