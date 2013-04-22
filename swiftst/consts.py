@@ -15,7 +15,7 @@ Utilities that will be install on all systems by the common setup
 '''
 general_tools = ['python-software-properties', 'patch', 'debconf',
                  'bonnie++', 'dstat', 'python-configobj', 'curl',
-                 'subversion', 'git-core', 'iptraf', 'htop',
+                 'subversion', 'git-core', 'iptraf', 'htop', 'syslog-ng',
                  'nmon', 'strace', 'iotop', 'debsums', 'python-pip',
                  'snmpd', 'snmp']
 
