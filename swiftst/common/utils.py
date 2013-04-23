@@ -84,8 +84,8 @@ def place_on_hold(pkg_list, remote=True):
     Places the swift packages in maybe others in a hold status
     That prevents apt-get upgrade from trying to install new versions
     '''
-    cmd = 'echo "%s hold" | dpkg --set-selections' % name
     for name in pkg_list:
+        cmd = 'echo "%s hold" | dpkg --set-selections' % name
         if remote:
             sudo(cmd)
         else:
