@@ -110,7 +110,8 @@ def adminbox_setup(conf):
             'snmpd', 'snmp']
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
+        local('apt-get update -qq -o Acquire::http::No-Cache=True')
+        local('apt-get install %s %s ' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
     The False param indicates that the fabric local call should be used
