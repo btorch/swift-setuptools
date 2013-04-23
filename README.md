@@ -1,31 +1,40 @@
 Info on swift-setuptools
 =========================
 
-* NOTE:
-    - This is a rough draft just to get things going with scripts and modules.
-    - On version 2 things will be redesigned and classes added to the modules and creation of a single utility with commands calls
-    - Package and repo name will also change
+Attention
+----------
+* This is a rough draft just to get things going with scripts and modules.
+* On version 2 things will be redesigned and classes added to the modules and creation of a single utility with commands calls
+* Package and repo name will also change
 
  
 Requirements
 ---------------
 * Fabric
 * A user (e.g:swiftops) with ssh-key access to all other nodes and sudo privs.
-  NOTE: for now the user above (swiftops) needs to have it's own rsa .pub key on it's 
-  own authorized_keys to avoid some password calls 
 * The storage node must already have all drives attached and available to the system
+
+
+Post Setup
+------------
+* Ring building, distribution should be done with swift-ring-master (https://github.com/pandemicsyn/swift-ring-master) and swiftscout (https://github.com/pandemicsyn/swiftscout)
 
 
 Alert
 --------
 Since git does not keep file permissions after cloned, some file attributes may change and that can be a pain.
-I believe there may be ways to make the git repo remember file permissions but I'm not planning on adding that.
+I believe there may be ways to make the git repo remember file permissions but no plans to have that added.
 
 
 Swift Environment Assumption
 -------------------------------
 * A Swift Admin box (MUST HAVE)
 * 3 or more swift nodes
+
+
+Installation
+--------------
+* On the admin box do; python setup.py install --prefix=/usr/local
 
 
 Running the scripts
