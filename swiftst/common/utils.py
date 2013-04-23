@@ -126,7 +126,7 @@ def check_installed(packages):
     This function will install an utility if not preset
     '''
     for name in packages:
-        with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+        with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
             c = local('dpkg -s %s' % name, capture=True)
             if c.failed:
                 local('apt-get install %s %s' % (sc.apt_opts, name))
