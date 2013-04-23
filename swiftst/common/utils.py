@@ -41,55 +41,84 @@ def generate_hosts_list(dsh_group):
 
 
 @parallel(pool_size=5)
-def add_keyrings():
+def add_keyrings(remote=True):
     '''
     installs any keyring package that is available in the dict
     '''
+    cmds = ['apt-get update -qq -o Acquire::http::No-Cache=True ',
+            'apt-get install %s %s ' % (sc.apt_opts, ' '.join(sc.keyrings))]
+
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
-        sudo('apt-get install %s %s' % (sc.apt_opts, ' '.join(sc.keyrings)))
+        for cmd in cmds:
+            if remote:
+                sudo(cmd)
+            else:
+                local(cmd)
 
 
 @parallel(pool_size=5)
-def setup_swiftuser():
+def setup_swiftuser(remote=True):
     '''
     Setting up the user allows one to avoid issues when the UID
     could later on be changed from system setup to another due to
     some ubuntu changes as it has happened before with mlocate
     '''
+    cmds = ['groupadd -g 400 swift',
+            'useradd -u 400 -g swift -G adm -M -s /bin/false swift']
+
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        check = run('id swift', quiet=True)
-        if not check.succeeded:
-            sudo('groupadd -g 400 swift')
-            sudo('useradd -u 400 -g swift -G adm -M -s /bin/false swift')
+        if remote:
+            check = run('id swift', quiet=True)
+            if not check.succeeded:
+                for cmd in cmds:
+                    sudo(cmd)
+        else:
+            check = local('id swift')
+            if not check.succeeded:
+                for cmd in cmds:
+                    local(cmd)
 
 
-def place_on_hold(pkg_list):
+def place_on_hold(pkg_list, remote=True):
     '''
     Places the swift packages in maybe others in a hold status
     That prevents apt-get upgrade from trying to install new versions
     '''
+    cmd = 'echo "%s hold" | dpkg --set-selections' % name
     for name in pkg_list:
-        sudo('echo "%s hold" | dpkg --set-selections' % name)
+        if remote:
+            sudo(cmd)
+        else:
+            local(cmd)
 
 
-def final_touches(sys_type=''):
-    check = run('test -d /var/cache/swift', quiet=True)
-    if not check.succeeded:
-        sudo('mkdir -p /var/cache/swift')
-    check = run('test -d /etc/swift', quiet=True)
-    if check.succeeded:
-        sudo('chown -R swift.swift /etc/swift')
-    sudo('chown swift.swift /var/cache/swift')
+def final_touches(sys_type='', remote=True):
+    '''
+    Creates some directories and update ownerships
+    This functions really shouldn't be needed and this
+    should be part of the packaging post install
+    '''
+    cmds = ['mkdir -p /var/cache/swift',
+            'chown swift.swift /var/cache/swift',
+            'mkdir -p /var/log/swift/stats',
+            'chown swift.swift /var/log/swift/stats',
+            'chown -R swift.swift /etc/swift']
 
-    if 'storage' in sys_type:
-        check = run('test -d /srv/node', quiet=True)
-        if not check.succeeded:
+    if remote:
+        for cmd in cmds:
+            sudo(cmd)
+        if 'storage' in sys_type:
             sudo('mkdir -p /srv/node')
-        check = run('test -d /var/log/swift/stats', quiet=True)
-        if not check.succeeded:
-            sudo('mkdir -p /var/log/swift/stats')
-        sudo('chown swift.swift /var/log/swift/stats')
+        if 'saio' in sys_type:
+            sudo('mkdir -p /srv/node')
+
+    else:
+        for cmd in cmds:
+            local(cmd)
+        if 'storage' in sys_type:
+            local('mkdir -p /srv/node')
+        if 'saio' in sys_type:
+            local('mkdir -p /srv/node')
 
 
 def check_installed(packages):
