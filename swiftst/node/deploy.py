@@ -27,6 +27,27 @@ def common_setup():
              % (sc.apt_opts, ' '.join(sc.general_tools)))
 
 
+@parallel(pool_size=5)
+def common_setup2(remote=True):
+    '''
+    This function will perform some setups that are common among all
+    systems
+    '''
+    cmds = ['apt-get update -qq -o Acquire::http::No-Cache=True ',
+            'export DEBIAN_FRONTEND=noninteractive; apt-get upgrade %s ' 
+            % sc.apt_opts,
+            'apt-get update -qq -o Acquire::http::No-Cache=True ',
+            'export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
+            % (sc.apt_opts, ' '.join(sc.general_tools))]
+
+    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+        for i in cmds:
+            if remote:
+                sudo(i)
+            else:
+                local(i)
+
+
 def swift_node_setup(node_type):
     '''
     This function will simply setup a swift node according with
@@ -109,7 +130,8 @@ def adminbox_setup(conf):
     '''
     execute(utils.add_keyrings, host='127.0.0.1')
     execute(utils.setup_swiftuser, host='127.0.0.1')
-    execute(common_setup, host='127.0.0.1')
+    #execute(common_setup, host='127.0.0.1')
+    common_setup2(False)
     execute(swift_generic_setup, ['generic'], host='127.0.0.1')
 
     '''
