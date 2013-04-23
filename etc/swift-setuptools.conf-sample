@@ -21,10 +21,6 @@ admin_ip = 172.16.0.3
 swift_hash = supercrypthash
 ringserver_ip = 172.16.0.3
 
-# Swift Log Processing Info
-# This is the swift account hash e.g: AUTH_%HASH%
-processing_account = AUTH_nothingyet
-
 # Syslog Info
 syslogs_ip = 172.16.0.3
 
