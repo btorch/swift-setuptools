@@ -14,7 +14,7 @@
 #   The udev rules are created mapping each device block ID to a SYMLINK of
 #   format cXuYp, where X is the controller number and Y the unit number.
 #
-#   On a VM system, it's a whole other story and therefore a drive_regex
+#   On a VM system, it's a whole other story and therefore a drive_list
 #   would be used to figure those out.
 #
 
@@ -35,9 +35,9 @@ usage_display (){
 cat << USAGE
 
 Syntax:
-    sudo setup_drives.sh [-V -r drive_regex] [-o] | [-c num -s num -e num] [-o]
+    sudo setup_drives.sh [-V -l "drive_list"] [-o] | [-c num -s num -e num] [-o]
         -V  Indicates you are setting them up on a Virtual Instance
-        -r  Regex used for figuring out devices to use (USE double quotes)
+        -l  List of devices to be setup e.g: "xvdb xvdd xvdf xvdg" (USE double quotes)
         -c  Controller nummber in case you are using the cXuYp udev formatting 
         -s  The first unit to start the drive setup from
         -e  The last unit that the drive setup will run on
@@ -52,7 +52,7 @@ exit 1
 
 
 # Parsing arguments
-while getopts "Vor:c:s:e:h" opts
+while getopts "Vol:c:s:e:h" opts
 do
     case $opts in         
         V)
@@ -61,8 +61,8 @@ do
         o)
             override=1
         ;;
-        r)
-            drive_regex="${OPTARG}"
+        l)
+            drive_list="${OPTARG}"
         ;;
         c)
             controller_num="${OPTARG}"
@@ -91,22 +91,22 @@ if [[ $num_of_args -lt 3 ]]; then
 fi
 
 # Checking ARGS passed
-if [[ -z "$vm_use" ]] && [[ ! -z $drive_regex ]]; then 
-    printf "\n\t Error: Both -V and -r must be provided\n"
+if [[ -z "$vm_use" ]] && [[ ! -z $drive_list ]]; then 
+    printf "\n\t Error: Both -V and -l must be provided\n"
     usage_display
 fi
-if [[ ! -z "$vm_use" ]] && [[ -z $drive_regex ]]; then 
-    printf "\n\t Error: Both -V and -r must be provided\n"
+if [[ ! -z "$vm_use" ]] && [[ -z $drive_list ]]; then 
+    printf "\n\t Error: Both -V and -l must be provided\n"
     usage_display
 fi
-if [[ ! -z "$vm_use" ]] && [[ ! -z $drive_regex ]]; then 
+if [[ ! -z "$vm_use" ]] && [[ ! -z $drive_list ]]; then 
     if [[ ! -z "$controller_num" ]] || [[ ! -z "$unit_start" ]] || [[ ! -z "$unit_end" ]]; then
-        printf "\n\t Error: Cannot declare -c/-s/-e options with -V and -r \n"
+        printf "\n\t Error: Cannot declare -c/-s/-e options with -V and -l \n"
         usage_display
     fi
 fi
 if [[ -z "$controller_num" ]] || [[ -z "$unit_start" ]] || [[ -z "$unit_end" ]]; then
-    if [[ -z "$vm_use" ]] && [[ -z $drive_regex ]]; then 
+    if [[ -z "$vm_use" ]] && [[ -z $drive_list ]]; then 
         printf "\n\t Error: All following options must be declared -c/-s/-e\n"
         usage_display
     fi
@@ -130,7 +130,7 @@ check_cmds (){
     fi
 }
 
-hw_system_setup (){
+hw_drive_setup() {
     for ((i=unit_start;i<=unit_end;i++)); do
         if [[ ! -e /dev/c"$controller_num"u"$i"p ]]; then
             printf "\n\t Error: device block does not exist (/dev/c"$controller_num"u"$i"p) \n"
@@ -156,16 +156,32 @@ hw_system_setup (){
     done
 }
 
+vm_drive_setup() {
+    for disk in $drive_list; do
+        if [[ ! -e /dev/$disk ]]; then
+            printf "\n\t Error: device block does not exist (/dev/$disk) \n"
+            exit 1
+        fi        
+        $parted -s /dev/$disk mklabel gpt
+        sz=$(parted -s /dev/$disk print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
+        $parted -s /dev/$disk mkpart primary xfs 0 $sz
+        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk /dev/$disk"1"
+        mkdir -p /srv/node/$disk 
+        fstab_line="LABEL=$disk /srv/node/$disk xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
+        echo "$fstab_line" >> /etc/fstab
+    done
+}
+
 
 # MAIN
 ##########
 check_cmds
 if [[ -z $vm_use ]]; then 
-    hw_system_setup
+    hw_drive_setup
 fi
 
 if [[ ! -z $vm_use ]]; then 
-    printf "\n\t Not yet implemented"
+    vm_drive_setup
 fi
 
 printf "\n\n"
