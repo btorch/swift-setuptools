@@ -2,7 +2,6 @@
 
 import os
 import sys
-import time
 import swiftst.common.utils as utils
 import swiftst.common.config as config
 import swiftst.node.deploy as deploy
@@ -28,10 +27,7 @@ def main():
         action="store", type="string",
         default="/etc/swift-setuptools/swift-setuptools.conf",
         dest="config",
-        help='''
-             Path to config file (default:
-             /etc/swift-setuptools/swift-setuptools.conf)
-             '''
+        help='Path to config file [default: %default]'
     )
     (options, args) = parser.parse_args()
     conf = config.parse_config([options.config, ])
