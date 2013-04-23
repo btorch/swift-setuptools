@@ -39,8 +39,6 @@ def parse_config(configfile):
         results['informant_ip'] = conf.get('informant_ip', '172.16.0.3')
         """Swift"""
         results['swift_hash'] = conf.get('swift_hash', 'supercrypthash')
-        results['processing_account'] = conf.get('processing_account',
-                                                 'AUTH_nothing')
         results['memcache_server_list'] = conf.get('memcache_server_list',
                                                    '127.0.0.1:11211')
         """Memcache"""
@@ -80,18 +78,6 @@ def parse_config(configfile):
     else:
         status = 404
         msg = "No section found for admin-system in the config file"
-        raise ConfigFileError(status, msg)
-
-    if c.has_section('swift-drives'):
-        conf = dict(c.items('swift-drives'))
-        results['swift_dir'] = conf.get('swift_dir', '/srv/node')
-        results['device_count'] = conf.get('device_count', 0)
-        results['device_pattern'] = conf.get('device_pattern',
-                                             'c[0-4]u([0-9]{1}|[1-9]{1}[0-9]+)p$')
-        results['device_exclusion'] = conf.get('device_exclusion', 'c0u0p')
-    else:
-        status = 404
-        msg = "No section found for swift-drives in the config file"
         raise ConfigFileError(status, msg)
 
     return results
