@@ -15,7 +15,7 @@ def common_setup(remote=True):
     systems
     '''
     cmds = ['apt-get update -qq -o Acquire::http::No-Cache=True ',
-            'export DEBIAN_FRONTEND=noninteractive; apt-get upgrade %s ' 
+            'export DEBIAN_FRONTEND=noninteractive; apt-get upgrade %s '
             % sc.apt_opts,
             'apt-get update -qq -o Acquire::http::No-Cache=True ',
             'export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
@@ -114,17 +114,8 @@ def adminbox_setup(conf):
         local('apt-get install %s %s ' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
-    The False param indicates that the fabric local call should be used
-    instead of the default remote call sudo
+    Create and initialize repository
     '''
-    utils.add_keyrings(False)
-    utils.setup_swiftuser(False)
-    common_setup(False)
-    swift_generic_setup(['generic'], False)
-
-    '''
-    Create and initialize repository    
-    '''    
     name = 'swift-acct' + conf['account_number'] + '-' + conf['account_nick']
     src_loc = conf['genconfigs'] + '/' + name
     dst_loc = conf['repository_base'] + '/' + conf['repository_name']
@@ -133,7 +124,7 @@ def adminbox_setup(conf):
         status = 500
         msg = 'Source directory does not exit (%s)' % src_loc
         raise ResponseError(status, msg)
-    
+
     if not os.path.exists(conf['repository_base']):
         try:
             os.mkdir(conf['repository_base'])
@@ -146,7 +137,7 @@ def adminbox_setup(conf):
         msg = 'Repository destination already seems to exist (%s)' % dst_loc
         raise ResponseError(status, msg)
 
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):     
+    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         c = local('rsync -aq0c %s/ %s' % (src_loc, dst_loc))
         if c.failed:
             status = 500
@@ -175,22 +166,32 @@ def adminbox_setup(conf):
         '''
         if os.path.exists(dst_loc + '/admin'):
             c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
-                       % (dst_loc + '/admin'))
+                      % (dst_loc + '/admin'))
             if c.failed:
                 status = 500
                 msg = 'Error syncing admin files from repo to /'
                 raise ResponseError(status, msg)
-        
+
         c = local('service git-daemon restart')
         if c.failed:
             status = 500
             msg = 'Error restarting git-daemon'
             raise ResponseError(status, msg)
-                
+
         c = local('service nginx restart')
         if c.failed:
             status = 500
             msg = 'Error restarting nginx'
             raise ResponseError(status, msg)
+
+    '''
+    Start setting up the box now. The False param indicates that
+    the fabric local call should be used instead of the default
+    remote call sudo
+    '''
+    utils.add_keyrings(False)
+    utils.setup_swiftuser(False)
+    common_setup(False)
+    swift_generic_setup(['generic'], False)
 
     return True
