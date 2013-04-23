@@ -12,7 +12,9 @@ except ImportError:
     install_requires.append("fabric")
 
 data_files = [('/etc/swift-setuptools',
-               ['etc/swift-setuptools.conf-sample'])]
+               ['etc/swift-setuptools.conf-sample']),
+              ('share/swift-setuptools', 
+               ['contrib/setup_drives.sh'])]
       
 setup(
     name = name,
