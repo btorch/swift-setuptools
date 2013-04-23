@@ -58,3 +58,6 @@ location where you will be able check, add, delete, modify the configs, crons, s
    * Install some packages and startup git-daemon-run, nginx  
 6. Once the above is done, you can use the swift-node-setup utility to deploy swift nodes.
    The --help can provide some more information and the code itself as well
+
+
+There is a more detailed example under contrib but still under work
