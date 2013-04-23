@@ -66,7 +66,7 @@ def setup_swiftuser(remote=True):
     cmds = ['groupadd -g 400 swift',
             'useradd -u 400 -g swift -G adm -M -s /bin/false swift']
 
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
+    with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
         if remote:
             check = run('id swift', quiet=True)
             if not check.succeeded:
