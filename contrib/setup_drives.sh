@@ -28,6 +28,8 @@ args_sarray=("$@")
 parted=/sbin/parted
 mkfs=/sbin/mkfs.xfs
 sed=/bin/sed
+inode_size=512
+
 
 usage_display (){
 cat << USAGE
@@ -47,12 +49,6 @@ Syntax:
 USAGE
 exit 1
 }
-
-# Check on ARGS count
-if [[ $num_of_args -lt 3 ]]; then 
-    printf "\n\t Error: Must have at least 2 arguments given\n"
-    usage_display
-fi
 
 
 # Parsing arguments
@@ -87,7 +83,14 @@ do
     esac           
 done
 
-# Checking args
+
+# Check on ARGS count
+if [[ $num_of_args -lt 3 ]]; then 
+    printf "\n\t Error: Must have at least 2 arguments given\n"
+    usage_display
+fi
+
+# Checking ARGS passed
 if [[ -z "$vm_use" ]] && [[ ! -z $drive_regex ]]; then 
     printf "\n\t Error: Both -V and -r must be provided\n"
     usage_display
@@ -110,17 +113,19 @@ if [[ -z "$controller_num" ]] || [[ -z "$unit_start" ]] || [[ -z "$unit_end" ]];
 fi
 
 
+# FUNCTIONS
+################
 check_cmds (){
     if [[ ! -e $parted ]]; then 
-        printf "\n\t Error: /sbin/parted not found\n"
+        printf "\n\t Error: /sbin/parted not found\n\n"
         exit 1
     fi
     if [[ ! -e $mkfs ]]; then 
-        printf "\n\t Error: /sbin/mkfs.xfs not found\n"
+        printf "\n\t Error: /sbin/mkfs.xfs not found\n\n"
         exit 1
     fi
     if [[ ! -e $sed ]]; then 
-        printf "\n\t Error: /bin/sed not found\n"
+        printf "\n\t Error: /bin/sed not found\n\n"
         exit 1
     fi
 }
@@ -144,12 +149,24 @@ hw_system_setup (){
         $parted -s /dev/c"$controller_num"u"$i"p mklabel gpt
         sz=$(parted -s /dev/c"$controller_num"u"$i"p print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
         $parted -s /dev/c"$controller_num"u"$i"p mkpart primary xfs 0 $sz
-        $mkfs -i size=1024 -d su=64k,sw=1 -f -L c"$controller_num"u"$i" /dev/c"$controller_num"u"$i"p1
+        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L c"$controller_num"u"$i" /dev/c"$controller_num"u"$i"p1
         mkdir -p /srv/node/c"$controller_num"u"$i" 
         fstab_line="LABEL=c"$controller_num"u"$i" /srv/node/c"$controller_num"u"$i" xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
         echo "$fstab_line" >> /etc/fstab
     done
 }
 
-printf "\n\n"
 
+# MAIN
+##########
+check_cmds
+if [[ -z $vm_use ]]; then 
+    hw_system_setup
+fi
+
+if [[ ! -z $vm_use ]]; then 
+    printf "\n\t Not yet implemented"
+fi
+
+printf "\n\n"
+exit 0 
