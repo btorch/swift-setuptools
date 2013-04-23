@@ -9,26 +9,7 @@ from swiftst.exceptions import ResponseError
 
 
 @parallel(pool_size=5)
-def common_setup():
-    '''
-    This function will perform some setups that are common among all
-    systems
-    '''
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
-        sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get upgrade %s '
-             % sc.apt_opts)
-        sudo('apt-get update -qq -o Acquire::http::No-Cache=True ')
-
-        '''
-        Install some general tools
-        '''
-        sudo('export DEBIAN_FRONTEND=noninteractive ; apt-get install %s %s '
-             % (sc.apt_opts, ' '.join(sc.general_tools)))
-
-
-@parallel(pool_size=5)
-def common_setup2(remote=True):
+def common_setup(remote=True):
     '''
     This function will perform some setups that are common among all
     systems
@@ -41,14 +22,14 @@ def common_setup2(remote=True):
             % (sc.apt_opts, ' '.join(sc.general_tools))]
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        for i in cmds:
+        for cmd in cmds:
             if remote:
-                sudo(i)
+                sudo(cmd)
             else:
-                local(i)
+                local(cmd)
 
 
-def swift_node_setup(node_type):
+def swift_node_setup(node_type, remote=True):
     '''
     This function will simply setup a swift node according with
     the node_type received. Once the packages are installed it
@@ -63,55 +44,66 @@ def swift_node_setup(node_type):
     else:
         pkgs = ' '.join(sc.packages['generic'] + sc.packages[node_type])
 
+    cmds = ['apt-get update -qq -o Acquire::http::No-Cache=True',
+            'apt-get install %s %s ' % (sc.apt_opts, pkgs)]
+
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        sudo('apt-get update -qq -o Acquire::http::No-Cache=True')
-        sudo('apt-get install %s %s ' % (sc.apt_opts, pkgs))
-        utils.place_on_hold(pkgs.split(' '))
-        utils.final_touches(node_type)
+        if remote:
+            for cmd in cmds:
+                sudo(cmd)
+            utils.place_on_hold(pkgs.split(' '))
+            utils.final_touches(node_type)
+        else:
+            for cmd in cmds:
+                local(cmd)
+            utils.place_on_hold(pkgs.split(' '), False)
+            utils.final_touches(node_type, False)
 
 
 @parallel(pool_size=5)
-def swift_generic_setup(node_type):
+def swift_generic_setup(node_type, remote=True):
     '''
     Really just a wrapper function identify task
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        swift_node_setup(node_type)
+        swift_node_setup(node_type, remote)
 
 
 @parallel(pool_size=5)
-def swift_proxy_setup(node_type):
+def swift_proxy_setup(node_type, remote=True):
     '''
     Really just a wrapper function identify task
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        swift_node_setup(node_type)
+        swift_node_setup(node_type, remote)
 
 
 @parallel(pool_size=5)
-def swift_storage_setup(node_type):
+def swift_storage_setup(node_type, remote=True):
     '''
     Really just a wrapper function identify task
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        swift_node_setup(node_type)
+        swift_node_setup(node_type, remote)
 
 
 @parallel(pool_size=5)
-def swift_saio_setup(node_type):
+def swift_saio_setup(node_type, remote=True):
     '''
     Really just a wrapper function identify task
     '''
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
-        swift_node_setup(node_type)
+        swift_node_setup(node_type, remote)
 
 
 @task
 @serial
 def adminbox_setup(conf):
     '''
-    Setups up the admin box
-    REALLY NEED TO FIX THIS
+    This function will install some needed packages for the admin box
+    also with some of the swift generic and common packages as well.
+    Then it will take care of setting up the repository where the configs
+    will be held.
     '''
     pkgs = ['rsync', 'dsh', 'git', 'git-core', 'nginx', 'subversion',
             'exim4', 'git-daemon-sysvinit', 'syslog-ng',
@@ -121,18 +113,13 @@ def adminbox_setup(conf):
         local('apt-get install %s %s' % (sc.apt_opts, ' '.join(pkgs)))
 
     '''
-    This is really stupid but for now got do it... The swiftops user
-    needs to have it's own .pub rsa key in its own authorized_keys file.
-    Otherwise the remote commands won't work and keep on asking for password.
-    The work around this is to make each of the functions doing the setup
-    return a list of commands to be executed by another main task and there
-    once can decide if should be run remotely or local. TBD
+    The False param indicates that the fabric local call should be used
+    instead of the default remote call sudo
     '''
-    execute(utils.add_keyrings, host='127.0.0.1')
-    execute(utils.setup_swiftuser, host='127.0.0.1')
-    #execute(common_setup, host='127.0.0.1')
-    common_setup2(False)
-    execute(swift_generic_setup, ['generic'], host='127.0.0.1')
+    utils.add_keyrings(False)
+    utils.setup_swiftuser(False)
+    common_setup(False)
+    swift_generic_setup(['generic'], False)
 
     '''
     Create and initialize repository    
