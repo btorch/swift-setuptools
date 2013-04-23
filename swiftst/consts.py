@@ -41,7 +41,6 @@ that they will be lowecase in the configuration file.
 templates = {'common/etc/aliases': ('EMAIL_ADDR', 'PAGER_ADDR'),
              'common/etc/exim4/update-exim4.conf': ('OUTGOING_DOMAIN',
                                                     'SMARTHOST'),
-             'common/etc/cron.d/ringverify': ('RINGSERVER_IP', ),
              'common/etc/swift/swift.conf': ('SWIFT_HASH', ),
              'common/etc/syslog-ng/conf.d/swift-syslog-ng.conf': ('SYSLOGS_IP', ),
              'proxy/etc/memcached.conf': ('MEMCACHE_MAXMEM', 'SIM_CONNECTIONS'),
