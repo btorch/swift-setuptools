@@ -133,8 +133,10 @@ check_cmds (){
 
 hw_drive_setup() {
     for ((i=unit_start;i<=unit_end;i++)); do
-        if [[ ! -e /dev/c"$controller_num"u"$i"p ]]; then
-            printf "\n\t Error: device block does not exist (/dev/c"$controller_num"u"$i"p) \n"
+        disk="c"$controller_num"u"$i"p"
+        disk_label="c"$controller_num"u"$i
+        if [[ ! -e /dev/$disk ]]; then
+            printf "\n\t Error: device block does not exist (/dev/$disk) \n"
             exit 1
         fi
         if [[ -z $override ]]; then 
@@ -147,14 +149,18 @@ hw_drive_setup() {
             fi
         fi
 
-        $parted -s /dev/c"$controller_num"u"$i"p mklabel gpt
-        sz=$(parted -s /dev/c"$controller_num"u"$i"p print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
-        $parted -s /dev/c"$controller_num"u"$i"p mkpart primary xfs 0 $sz
-        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L c"$controller_num"u"$i" /dev/c"$controller_num"u"$i"p1
-        mkdir -p /srv/node/c"$controller_num"u"$i" 
-        fstab_line="LABEL=c"$controller_num"u"$i" /srv/node/c"$controller_num"u"$i" xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
-        echo "$fstab_line" >> /etc/fstab
+        $parted -s /dev/$disk mklabel gpt
+        sz=$(parted -s /dev/$disk print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
+        $parted -s /dev/$disk mkpart primary xfs 0 $sz
+        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk_label /dev/$disk"1"
+        mkdir -p /srv/node/$disk_label 
+        fstab_line="LABEL=$disk_label /srv/node/$disk_label xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
+        exists=$(sed -n "/$disk_label xfs/q 2" /etc/fstab  ; echo $?)
+        if [[ $exists -ne 2 ]]; then 
+            echo "$fstab_line" >> /etc/fstab
+        fi
     done
+    mount -a
 }
 
 vm_drive_setup() {
@@ -169,8 +175,12 @@ vm_drive_setup() {
         $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk /dev/$disk"1"
         mkdir -p /srv/node/$disk 
         fstab_line="LABEL=$disk /srv/node/$disk xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
-        echo "$fstab_line" >> /etc/fstab
+        exists=$(sed -n "/$disk xfs/q 2" /etc/fstab  ; echo $?)
+        if [[ $exists -ne 2 ]]; then 
+            echo "$fstab_line" >> /etc/fstab
+        fi        
     done
+    mount -a
 }
 
 
