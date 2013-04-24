@@ -60,4 +60,4 @@ location where you will be able check, add, delete, modify the configs, crons, s
    The --help can provide some more information and the code itself as well
 
 
-There is a more detailed example under contrib but still under work
+NOTE: There is a more detailed example under contrib swift-install-process.html/.rtf 
