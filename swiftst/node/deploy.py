@@ -116,6 +116,8 @@ def adminbox_setup(conf):
     '''
     Create and initialize repository
     '''
+    print "[local] : Creating and Initializing repository"
+
     name = 'swift-acct' + conf['account_number'] + '-' + conf['account_nick']
     src_loc = conf['genconfigs'] + '/' + name
     dst_loc = conf['repository_base'] + '/' + conf['repository_name']
@@ -145,7 +147,6 @@ def adminbox_setup(conf):
             raise ResponseError(status, msg)
 
         try:
-            'This sucks really wanted to use a python git api'
             pwd = os.getcwd()
             local('git init -q %s' % dst_loc)
             os.chdir(dst_loc)
@@ -164,6 +165,7 @@ def adminbox_setup(conf):
         Now sync the admin configs over to the system itself
         and then restart services like git-daemon and nginx
         '''
+        print "[local] : Syncing admin configs to system /"
         if os.path.exists(dst_loc + '/admin'):
             c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
                       % (dst_loc + '/admin'))
@@ -172,12 +174,14 @@ def adminbox_setup(conf):
                 msg = 'Error syncing admin files from repo to /'
                 raise ResponseError(status, msg)
 
+        print "[local] : Starting up git-daemon"
         c = local('service git-daemon restart')
         if c.failed:
             status = 500
             msg = 'Error restarting git-daemon'
             raise ResponseError(status, msg)
 
+        print "[local] : Starting up nginx"
         c = local('service nginx restart')
         if c.failed:
             status = 500
@@ -189,9 +193,13 @@ def adminbox_setup(conf):
     the fabric local call should be used instead of the default
     remote call sudo
     '''
+    print "[local] : calling add_keyrings"
     utils.add_keyrings(False)
+    print "[local] : calling setup_swiftuser"
     utils.setup_swiftuser(False)
+    print "[local] : calling common_setup"
     common_setup(False)
+    print "[local] : calling swift_generic_setup"
     swift_generic_setup(['generic'], False)
 
     return True
