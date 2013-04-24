@@ -6,15 +6,15 @@ com2sec     systems     10.0.0.0/8      public
 com2sec     systems     172.16.0.0/12   public
 
 #group      name    sec.model   sec.name
-group       nast    v1          systems
-group       nast    v2c         systems
-group       nast    usm         systems
+group       swiftops    v1          systems
+group       swiftops    v2c         systems
+group       swiftops    usm         systems
 
 #view       name        incl/excl   subtree mask
 view        systemview  included    .1      80
 
 #access     name    context sec.model   sec.level   match   read        write   notif
-access      nast    ""      any         noauth      exact   systemview  none    none
+access      swiftops    ""      any         noauth      exact   systemview  none    none
 
 #includeAllDisks    min.percent
 includeAllDisks     10
@@ -34,9 +34,9 @@ interface eth4 117 1000000000
 interface eth5 117 1000000000
 
 # System contact information
-syslocation RackLabs
-syscontact  <swiftops@lists.rackspace.com>
-sysName admin1.syd2.swift.racklabs.com
+syslocation SwiftCluster
+syscontact  swiftops
+#sysName 
 
 # Subagent control (required for snmptrapd)
 master      agentx
