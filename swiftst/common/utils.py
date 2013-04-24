@@ -102,7 +102,8 @@ def final_touches(sys_type='', remote=True):
             'chown swift.swift /var/cache/swift',
             'mkdir -p /var/log/swift/stats',
             'chown swift.swift /var/log/swift/stats',
-            'chown -R swift.swift /etc/swift']
+            'chown -R swift.swift /etc/swift',
+            'rm -f /etc/swift/*.dpkg-dist']
 
     if remote:
         for cmd in cmds:
@@ -111,7 +112,6 @@ def final_touches(sys_type='', remote=True):
             sudo('mkdir -p /srv/node')
         if 'saio' in sys_type:
             sudo('mkdir -p /srv/node')
-
     else:
         for cmd in cmds:
             local(cmd)
@@ -137,13 +137,13 @@ def svn_setup(conf):
     '''
     Setting up SVN repo
     - create /srv/svn if not there yet
-    - Make sure it has src as the group owner and 2777 perms 
+    - Make sure it has src as the group owner and 2777 perms
     - add user(s) to the src group
     - make sure inetd.conf is present openbsd-inetd
     - echo "svn stream tcp nowait nast /usr/bin/svnserve svnserve -i -r /srv/svn" into inetd.conf and restart
     - svnadmin create /srv/svn/swift-cluster-configs
     - svn import SRC_DIR file:///srv/svn/swift-cluster-configs -m "Initial import"
-    - change perms on /srv/svn for 
+    - change perms on /srv/svn for
     '''
 
 
