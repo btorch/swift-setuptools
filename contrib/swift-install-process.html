@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1038.36">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
+    p.p5 {margin: 0.0px 0.0px 0.0px 9.0px; text-indent: -9.0px; font: 12.0px Helvetica}
+    p.p6 {margin: 0.0px 0.0px 0.0px 9.0px; text-indent: -9.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    span.Apple-tab-span {white-space:pre}
+  </style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><b>--------------------</b></p>
+<p class="p2"><b>PRE-SETUP</b></p>
+<p class="p2"><b>--------------------</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p4"><b>- Udev Rules Information:</b></p>
+<p class="p3"><b></b><br></p>
+<p class="p4"><b>1) Find out what is your first jbod device block unit<span class="Apple-converted-space"> </span></b></p>
+<p class="p4">This is an example on a system with H800 external attached to a 45 drive Jbod unit where sdc is the first block unit</p>
+<p class="p3"><br></p>
+<p class="p4"><b><i># udevadm info --query path -n /dev/sdc</i></b></p>
+<p class="p4">/devices/pci0000:20/0000:20:03.0/0000:<b>22:00.0</b>/host1/target1:2:0/1:2:0:0/block/sdc</p>
+<p class="p3"><br></p>
+<p class="p4"><b><i># lspci -vv |grep "22:00.0"</i></b></p>
+<p class="p4">22:00.0 RAID bus controller: LSI Logic / Symbios Logic MegaRAID SAS 2108 [Liberator] (rev 05)</p>
+<p class="p3"><br></p>
+<p class="p4"><b><i># udevadm info -a -p  $(udevadm info -q path -n /dev/sdc) | less</i></b></p>
+<p class="p4">Udevadm info starts with the device specified by the devpath and then</p>
+<p class="p4">walks up the chain of parent devices. It prints for every device</p>
+<p class="p4">found, all possible attributes in the udev rules key format.</p>
+<p class="p4">A rule to match, can be composed by the attributes of the device</p>
+<p class="p4">and the attributes from one single parent device.</p>
+<p class="p3"><br></p>
+<p class="p4">  looking at device '/devices/pci0000:20/0000:20:03.0/0000:22:00.0/host1/target1:2:0/1:2:0:0/block/sdc':</p>
+<p class="p4">    KERNEL=="sdc"</p>
+<p class="p4">    SUBSYSTEM=="block"</p>
+<p class="p4">    DRIVER==""</p>
+<p class="p4">    ATTR{range}=="16"</p>
+<p class="p4">    ATTR{ext_range}=="256"</p>
+<p class="p4">    ATTR{removable}=="0"</p>
+<p class="p4">    ATTR{ro}=="0"</p>
+<p class="p4">    ATTR{size}=="5859442688"</p>
+<p class="p4">    ATTR{alignment_offset}=="0"</p>
+<p class="p4">    ATTR{discard_alignment}=="0"</p>
+<p class="p4">    ATTR{capability}=="50"</p>
+<p class="p4">    ATTR{stat}==" 4257578     1801 609826481 21443312 13463198  1075455 490650399 110490812        0 22480736 131892360"</p>
+<p class="p4">    ATTR{inflight}=="       0        0"</p>
+<p class="p4">    ATTR{events}==""</p>
+<p class="p4">    ATTR{events_async}==""</p>
+<p class="p4">    ATTR{events_poll_msecs}=="-1"</p>
+<p class="p3"><br></p>
+<p class="p4">  looking at parent device '/devices/pci0000:20/0000:20:03.0/0000:22:00.0/host1/target1:2:0/1:2:0:0':</p>
+<p class="p4">    KERNELS=="1:2:0:0"</p>
+<p class="p4">    SUBSYSTEMS=="scsi"</p>
+<p class="p4">    DRIVERS=="sd"</p>
+<p class="p4">    ATTRS{device_blocked}=="0"</p>
+<p class="p4">    ATTRS{type}=="0"</p>
+<p class="p4">    ATTRS{scsi_level}=="6"</p>
+<p class="p4">    ATTRS{vendor}=="DELL    "</p>
+<p class="p4">    ATTRS{model}=="PERC H800       "</p>
+<p class="p4">    ATTRS{rev}=="2.10"</p>
+<p class="p4">    ATTRS{state}=="running"</p>
+<p class="p4">    ATTRS{timeout}=="90"</p>
+<p class="p4">    ATTRS{iocounterbits}=="32"</p>
+<p class="p4">    ATTRS{iorequest_cnt}=="0x10e67b0"</p>
+<p class="p4">    ATTRS{iodone_cnt}=="0x10e67b0"</p>
+<p class="p4">    ATTRS{ioerr_cnt}=="0x6"</p>
+<p class="p4">    ATTRS{evt_media_change}=="0"</p>
+<p class="p4">    ATTRS{dh_state}=="detached"</p>
+<p class="p4">    ATTRS{queue_depth}=="256"</p>
+<p class="p4">    ATTRS{queue_ramp_up_period}=="120000"</p>
+<p class="p4">    ATTRS{queue_type}=="none"</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><b><i>2) Create /etc/udev/rules.d/10_swift.rules using the information gathered above for the device and parent</i></b></p>
+<p class="p3"><br></p>
+<p class="p4">############## HOST1 #################</p>
+<p class="p4">### Slot:   22:00.0</p>
+<p class="p4">### Class:  RAID bus controller</p>
+<p class="p4">### Vendor: LSI Logic / Symbios Logic</p>
+<p class="p4">### Device: LSI MegaSAS 9260</p>
+<p class="p4">### SVendor:        Dell</p>
+<p class="p4">### SDevice:        Device 1f15</p>
+<p class="p4">### Rev:    05</p>
+<p class="p4">### Driver: megaraid_sas</p>
+<p class="p4">### Module: megaraid_sas</p>
+<p class="p4">###</p>
+<p class="p4">### Some helpful commands </p>
+<p class="p4">### udevadm info --query=all --attribute-walk --path=$(udevadm info --query=path  -n /dev/sdX)</p>
+<p class="p4">### modinfo  /lib/modules/2.6.32-34-server/kernel/drivers/scsi/megaraid/megaraid_sas.ko </p>
+<p class="p4">###</p>
+<p class="p4">### Rules for controller H800 (Controller #0 - host1 - Physical Slot 6)</p>
+<p class="p4">KERNELS=="1:2:0:0", ATTRS{model}=="PERC H800", KERNEL=="sd*",    SYMLINK+="c1u0p%n"</p>
+<p class="p4">KERNELS=="1:2:1:0", ATTRS{model}=="PERC H800", KERNEL=="sd*",    SYMLINK+="c1u1p%n"</p>
+<p class="p4">KERNELS=="1:2:2:0", ATTRS{model}=="PERC H800", KERNEL=="sd*",    SYMLINK+="c1u2p%n"</p>
+<p class="p4">....</p>
+<p class="p4">KERNELS=="1:2:44:0", ATTRS{model}=="PERC H800", KERNEL=="sd*",    SYMLINK+="c1u44p%n"</p>
+<p class="p3"><br></p>
+<p class="p2"><b><i>3) Run "udevadm trigger" to create symlinks</i></b></p>
+<p class="p2"><b><i>4) Verify they were created and reboot<span class="Apple-converted-space"> </span></i></b></p>
+<p class="p1"><b><i></i></b><br></p>
+<p class="p2"><b><i>5) Drive setup:</i></b></p>
+<p class="p2"><i><span class="Apple-tab-span">	</span>You could use </i><a href="https://github.com/btorch/swift-setuptools/blob/master/contrib/setup_drives.sh"><i>https://github.com/btorch/swift-setuptools/blob/master/contrib/setup_drives.sh</i></a></p>
+<p class="p1"><i></i><br></p>
+<p class="p2"><b><i>6) Run bonnie++ on the drives to find out what breaks (may take a couple days)</i></b></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p2"><b>--------------------</b></p>
+<p class="p2"><b>SWIFT SETUP</b></p>
+<p class="p2"><b>--------------------</b></p>
+<p class="p1"><br></p>
+<p class="p2">1) Login to the admin box</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- make sure your user has ssh-key access to all other nodes</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- apt-get install git git-core -Vy</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- git clone git@github.com:btorch/swift-setuptools.git<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
+<p class="p2">2) Install the tools</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- apt-get install python-setuptools -Vy</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- cd swift-setuptools</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- python setup.py<span class="Apple-converted-space">  </span>install --prefix=/usr/local</p>
+<p class="p1"><br></p>
+<p class="p2">3) Create a swift-setuptools.conf<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>- cd /etc/swift-setuptools</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- cp swift-setuptools.conf-sample swift-setuptools.conf</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- Modify the values of the config files to suit your environment needs</p>
+<p class="p1"><br></p>
+<p class="p2">4) Generate the configuration files<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>- run : swift-genconfigs -v<span class="Apple-converted-space">  </span>(-h/--help for info)</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- If needed go to the "Generated Location" path and modify any configuration</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>files before proceeding.<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span>Example:<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- if you need to add more middlewares</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Or change some keystone setting on proxy-server.conf<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Or change something on another file like dispertion.conf</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Setup DSH groups … etc<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
+<p class="p2">*** Before proceeding make sure you have proper dsh groups setup</p>
+<p class="p2"><span class="Apple-converted-space">      </span>pointing to the proper boxes and a proper /etc/hosts file which should</p>
+<p class="p2"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space">  </span>have been done during the pre setup anyway ***</p>
+<p class="p1"><br></p>
+<p class="p2">5) Setup the admin box<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>- run : swift-adminbox-setup -v (-h/--help for info)</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- Just in case: stop/start syslog-ng and exim4 and make sure it's listening<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>Note: The above will create a git repo under /srv/git/swift-cluster-configs/<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space">            </span>which all servers will pull their configs from. So any further config changes</p>
+<p class="p2"><span class="Apple-converted-space">                 </span>should happen in this repo.</p>
+<p class="p1"><br></p>
+<p class="p2">6) Deploy swift systems: (proxy, storage or saio)</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- check on swift-node-setup --help</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- Example: swift-node-setup -t storage -g storage</p>
+<p class="p1"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-tab-span">	</span></p>
+<p class="p2"><b>-------------------------------</b></p>
+<p class="p2"><b>SWIFT RING DEPLOY</b></p>
+<p class="p2"><b>-------------------------------</b></p>
+<p class="p1"><br></p>
+<p class="p2">1) Start up all the swift services on all the storage nodes<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>- swift-init all start<span class="Apple-converted-space">  </span>(ignore the ring complaints)</p>
+<p class="p1"><br></p>
+<p class="p2">2) Make sure that you can perform a recon request to all ports 600[0-2]</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- curl -i http://IP_ADDR:6000/recon/unmounted</p>
+<p class="p1"><br></p>
+<p class="p2">3) Create the rings (<b>folsom</b>, cd /srv/ring --- <b>grizzly</b>,<span class="Apple-converted-space">  </span>cd /etc/swift)</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- Choose the proper &lt;part&gt; &lt;replicas&gt; &lt;min_hour&gt; for the cluster in question</p>
+<p class="p2"><span class="Apple-tab-span">	</span>- for i in account container object ; do swift-ring-builder<span class="Apple-converted-space">  </span>/etc/swift/$i.builder create &lt;part&gt; &lt;reps&gt; &lt;mhour&gt; ; done<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
+<p class="p2"><b>FOLSOM</b>:</p>
+<p class="p2"><i><span class="Apple-tab-span">	</span>- You will be using the scripts found in the admin box under /srv/ring/scripts</i></p>
+<p class="p2"><span class="Apple-tab-span">	</span>4) Start adding nodes to the rings<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Example: /srv/ring/scripts/ring_add.sh -i 172.16.0.7 -r object -z 1 -w 100 -c 0 -s 1 -e 6<span class="Apple-converted-space">  </span>(-h for help/info)</p>
+<p class="p2"><span class="Apple-tab-span">	</span>5) Once all is done rebalance all rings</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder account.builder rebalance<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder container.builder rebalance<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder object.builder rebalance<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>6) Run : /srv/ring/scripts/updatemd5.sh<span class="Apple-converted-space">  </span>to create the ring.md5sum file</p>
+<p class="p2"><span class="Apple-tab-span">	</span>7) Run: dsh -Mc -g GROUP '/usr/local/bin/retrievering.sh RINGSERVER_IP</p>
+<p class="p1"><br></p>
+<p class="p2"><b>GRIZZLY:</b></p>
+<p class="p2"><i><span class="Apple-tab-span">	</span>- You will be using swiftscout and swift-ring-master</i></p>
+<p class="p2"><span class="Apple-tab-span">	</span>4) Install the debian packages that can be found under <i>swift-setuptools/contrib</i></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- The swiftscout is installed only on the admin box</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- The swift-ring-master is installed on the admin box and all nodes that require the swift rings</p>
+<p class="p2"><span class="Apple-tab-span">	</span>5) Start adding nodes to the rings using drivescout</p>
+<p class="p1"><b><i></i></b><br></p>
+<p class="p1"><br></p>
+<p class="p2">1) On the admin box</p>
+<p class="p5"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>- git clone git://github.com/pandemicsyn/swift-ring-master.git</p>
+<p class="p5"><span class="Apple-tab-span">	</span>- git clone git://github.com/pandemicsyn/swiftscout.git</p>
+<p class="p6"><br></p>
+<p class="p5">2) Look for Build packages with stdeb</p>
+<p class="p5"><span class="Apple-tab-span">	</span>-<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+</body>
+</html>
