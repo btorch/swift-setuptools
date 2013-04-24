@@ -188,6 +188,13 @@ def adminbox_setup(conf):
             msg = 'Error restarting nginx'
             raise ResponseError(status, msg)
 
+        print "[local] : Restarting syslog-ng"
+        c = local('service syslog-ng restart')
+        if c.failed:
+            status = 500
+            msg = 'Error restarting syslog-ng'
+            raise ResponseError(status, msg)
+
     '''
     Start setting up the box now. The False param indicates that
     the fabric local call should be used instead of the default
