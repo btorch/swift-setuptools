@@ -3,8 +3,5 @@
 ##MAILTO="swiftops"
 ## m h  dom mon dow   command
 ##1 */3 * * * swiftops bash /usr/local/bin/dispersionpage.sh
-##58 23 * * * swiftops bash /usr/local/bin/accountcreation.sh
 ##58 23 * * * swiftops bash /usr/local/bin/storageusage.sh
-##*/5 * * * * swiftops bash /usr/local/bin/accountpage.sh
-##*/5 * * * * swiftops bash /usr/local/bin/munin-storageusage.sh
 ##10 */1 * * * swiftops bash /usr/local/bin/update-object-count.sh
