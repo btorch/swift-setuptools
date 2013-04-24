@@ -24,10 +24,13 @@ Dictionary that contains system:packages that will be installed
 for swift according to each system functionality
 '''
 packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
-            'proxy': ['swift-proxy', 'python-keystone', 'python-keystoneclient'],
+            'proxy': ['swift-proxy', 'python-keystone',
+                      'python-keystoneclient', 'memcached', 'python-memcache'],
             'storage': ['swift-account', 'swift-container', 'swift-object'],
             'saio': ['swift-proxy', 'swift-account', 'swift-container',
-                     'swift-object', 'python-keystone', 'python-keystoneclient'],
+                     'swift-object', 'python-keystone',
+                     'python-keystoneclient', 'memcached',
+                     'python-memcache'],
             'other': ['python-suds', 'python-slogging']
             }
 
