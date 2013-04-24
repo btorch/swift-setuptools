@@ -45,6 +45,7 @@ Syntax:
         -h For this usage screen
 
     NOTE: The -c/-s/-e options cannot be used when -V is declared
+          If a partition already exist for a device it will be DESTROYED
 
 USAGE
 exit 1
