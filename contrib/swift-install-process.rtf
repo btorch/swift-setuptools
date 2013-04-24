@@ -168,7 +168,7 @@ KERNELS=="1:2:44:0", ATTRS\{model\}=="PERC H800", KERNEL=="sd*", \'a0 \'a0SYMLIN
 \
 5) Setup the admin box \
 	- run : swift-adminbox-setup -v (-h/--help for info)\
-	- Just in case: stop/start syslog-ng and exim4 and make sure it's listening \
+	- Just in case: stop/start exim4 and make sure it's listening \
 	  Note: The above will create a git repo under /srv/git/swift-cluster-configs/ \
 	             which all servers will pull their configs from. So any further config changes\
                  should happen in this repo.\
@@ -176,6 +176,8 @@ KERNELS=="1:2:44:0", ATTRS\{model\}=="PERC H800", KERNEL=="sd*", \'a0 \'a0SYMLIN
 6) Deploy swift systems: (proxy, storage or saio)\
 	- check on swift-node-setup --help\
 	- Example: swift-node-setup -t storage -g storage\
+\
+7) Restart syslog-ng on all boxes\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
 \cf0     \
 	\
@@ -211,10 +213,12 @@ SWIFT RING DEPLOY\
 \i0 \
 	4) Start adding nodes to the rings \
 		- Example: /srv/ring/scripts/ring_add.sh -i 172.16.0.7 -r object -z 1 -w 100 -c 0 -s 1 -e 6  (-h for help/info)\
+\
 	5) Once all is done rebalance all rings\
 		swift-ring-builder account.builder rebalance \
 		swift-ring-builder container.builder rebalance \
-		swift-ring-builder object.builder rebalance \
+		swift-ring-builder object.builder rebalance \
+\
 	6) Run : /srv/ring/scripts/updatemd5.sh  to create the ring.md5sum file\
 	7) Run: dsh -Mc -g GROUP '/usr/local/bin/retrievering.sh RINGSERVER_IP\
 \
@@ -229,21 +233,43 @@ SWIFT RING DEPLOY\
 
 \i0\b0 		- The swiftscout is installed only on the admin box\
 		- The swift-ring-master is installed on the admin box and all nodes that require the swift rings\
-	5) Start adding nodes to the rings using drivescout
-\i\b \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
-\cf0 \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\
+	5) Start adding nodes to the rings using drivescout\
+		- drivescout -v -y -w 100  --mount-prefix=/srv/node -r IP/IPRANGE -p PORT -z ZONE /etc/swift/BUILDER_FILE\
+		- Read drivescout --help for more details\
+		- Verify the rings and then rebalance: swift-ring-builder BUILDER_FILE rebalance\
+\
+	6) Start setting up
+\i  swift-ring-master 
+\i0 on the Admin box
+\i \
 
-\i0\b0 \cf0 \
-1) On the admin box\
-\pard\tx200\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li180\fi-180\ql\qnatural\pardirnatural
-\cf0  	- git clone git://github.com/pandemicsyn/swift-ring-master.git\
-	- git clone git://github.com/pandemicsyn/swiftscout.git\
+\i0 	    - Copy config
+\i\b \
+
+\i0\b0 		- cp /usr/share/swift-ring-master/ring-master.conf-sample /etc/swift/ring-master.conf\
+		- Make any changes to the configs that you may see fit\
+	    - Copy init scripts\
+		- cp /usr/share/swift-ring-master/swift-ring-master-init /etc/init.d/\
+		- cp /usr/share/swift-ring-master/swift-ring-master-wsgi-init /etc/init.d/\
+		- NOTE: services are not started up at boot time unless you enable it with update-rc.d\
+	    - Start Services\
+		- /etc/init.d/swift-ring-master-init start\
+		- /etc/init.d/swift-ring-master-wsgi-init start\
+		- chown -R swift.swift /etc/swift\
+		- chown swift.swift /etc/swift/.lock\
+	\
 \
-2) Look for Build packages with stdeb\
-	- \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
-\cf0 \
+	7) Start setting up
+\i  swift-ring-master
+\i0  on all other systems that require the ring\
+	    Assuming pkg is already installed on all other boxes\
+	    - Copy config\
+		- dsh -Mc -g GROUP 'cp /usr/share/swift-ring-master/ring-minion.conf-sample /etc/swift/ring-minion.conf'\
+		- dsh -Mc -g GROUP 'sed -i "s;^#ring_master.*;ring_master = http://RINGSERVER_IP:8090/;" /etc/swift/ring-minion.conf '\
+	    - Retrieve Ring\
+		- dsh -Mc -g GROUP 'swift-ring-minion-server -f -o ; chown -R swift.swift /etc/swift'\
 \
+	8) Restart all swift services everywhere\
+	\
 }

@@ -11,8 +11,6 @@
     p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
     p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000; min-height: 14.0px}
     p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #000000}
-    p.p5 {margin: 0.0px 0.0px 0.0px 9.0px; text-indent: -9.0px; font: 12.0px Helvetica}
-    p.p6 {margin: 0.0px 0.0px 0.0px 9.0px; text-indent: -9.0px; font: 12.0px Helvetica; min-height: 14.0px}
     span.Apple-tab-span {white-space:pre}
   </style>
 </head>
@@ -149,7 +147,7 @@
 <p class="p1"><br></p>
 <p class="p2">5) Setup the admin box<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span>- run : swift-adminbox-setup -v (-h/--help for info)</p>
-<p class="p2"><span class="Apple-tab-span">	</span>- Just in case: stop/start syslog-ng and exim4 and make sure it's listening<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>- Just in case: stop/start exim4 and make sure it's listening<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>Note: The above will create a git repo under /srv/git/swift-cluster-configs/<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span> <span class="Apple-converted-space">            </span>which all servers will pull their configs from. So any further config changes</p>
 <p class="p2"><span class="Apple-converted-space">                 </span>should happen in this repo.</p>
@@ -157,6 +155,8 @@
 <p class="p2">6) Deploy swift systems: (proxy, storage or saio)</p>
 <p class="p2"><span class="Apple-tab-span">	</span>- check on swift-node-setup --help</p>
 <p class="p2"><span class="Apple-tab-span">	</span>- Example: swift-node-setup -t storage -g storage</p>
+<p class="p1"><br></p>
+<p class="p2">7) Restart syslog-ng on all boxes</p>
 <p class="p1"><span class="Apple-converted-space">    </span></p>
 <p class="p1"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><b>-------------------------------</b></p>
@@ -177,10 +177,12 @@
 <p class="p2"><i><span class="Apple-tab-span">	</span>- You will be using the scripts found in the admin box under /srv/ring/scripts</i></p>
 <p class="p2"><span class="Apple-tab-span">	</span>4) Start adding nodes to the rings<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Example: /srv/ring/scripts/ring_add.sh -i 172.16.0.7 -r object -z 1 -w 100 -c 0 -s 1 -e 6<span class="Apple-converted-space">  </span>(-h for help/info)</p>
+<p class="p1"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span>5) Once all is done rebalance all rings</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder account.builder rebalance<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder container.builder rebalance<span class="Apple-converted-space"> </span></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>swift-ring-builder object.builder rebalance<span class="Apple-converted-space"> </span></p>
+<p class="p1"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span>6) Run : /srv/ring/scripts/updatemd5.sh<span class="Apple-converted-space">  </span>to create the ring.md5sum file</p>
 <p class="p2"><span class="Apple-tab-span">	</span>7) Run: dsh -Mc -g GROUP '/usr/local/bin/retrievering.sh RINGSERVER_IP</p>
 <p class="p1"><br></p>
@@ -189,16 +191,36 @@
 <p class="p2"><span class="Apple-tab-span">	</span>4) Install the debian packages that can be found under <i>swift-setuptools/contrib</i></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- The swiftscout is installed only on the admin box</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- The swift-ring-master is installed on the admin box and all nodes that require the swift rings</p>
+<p class="p1"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span>5) Start adding nodes to the rings using drivescout</p>
-<p class="p1"><b><i></i></b><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- drivescout -v -y -w 100<span class="Apple-converted-space">  </span>--mount-prefix=/srv/node -r IP/IPRANGE -p PORT -z ZONE /etc/swift/BUILDER_FILE</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Read drivescout --help for more details</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Verify the rings and then rebalance: swift-ring-builder BUILDER_FILE rebalance</p>
 <p class="p1"><br></p>
-<p class="p2">1) On the admin box</p>
-<p class="p5"><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span>- git clone git://github.com/pandemicsyn/swift-ring-master.git</p>
-<p class="p5"><span class="Apple-tab-span">	</span>- git clone git://github.com/pandemicsyn/swiftscout.git</p>
-<p class="p6"><br></p>
-<p class="p5">2) Look for Build packages with stdeb</p>
-<p class="p5"><span class="Apple-tab-span">	</span>-<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span>6) Start setting up<i> swift-ring-master </i>on the Admin box</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>- Copy config</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- cp /usr/share/swift-ring-master/ring-master.conf-sample /etc/swift/ring-master.conf</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- Make any changes to the configs that you may see fit</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>- Copy init scripts</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- cp /usr/share/swift-ring-master/swift-ring-master-init /etc/init.d/</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- cp /usr/share/swift-ring-master/swift-ring-master-wsgi-init /etc/init.d/</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- NOTE: services are not started up at boot time unless you enable it with update-rc.d</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>- Start Services</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- /etc/init.d/swift-ring-master-init start</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- /etc/init.d/swift-ring-master-wsgi-init start</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- chown -R swift.swift /etc/swift</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- chown swift.swift /etc/swift/.lock</p>
+<p class="p1"><span class="Apple-tab-span">	</span></p>
 <p class="p1"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>7) Start setting up<i> swift-ring-master</i> on all other systems that require the ring</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>Assuming pkg is already installed on all other boxes</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>- Copy config</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- dsh -Mc -g GROUP 'cp /usr/share/swift-ring-master/ring-minion.conf-sample /etc/swift/ring-minion.conf'</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- dsh -Mc -g GROUP 'sed -i "s;^#ring_master.*;ring_master = http://RINGSERVER_IP:8090/;" /etc/swift/ring-minion.conf '</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">    </span>- Retrieve Ring</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>- dsh -Mc -g GROUP 'swift-ring-minion-server -f -o ; chown -R swift.swift /etc/swift'</p>
 <p class="p1"><br></p>
+<p class="p2"><span class="Apple-tab-span">	</span>8) Restart all swift services everywhere</p>
+<p class="p1"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>
