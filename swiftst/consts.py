@@ -27,7 +27,7 @@ packages = {'generic': ['swift', 'python-swift', 'python-swiftclient'],
             'proxy': ['swift-proxy', 'python-keystone', 'python-keystoneclient'],
             'storage': ['swift-account', 'swift-container', 'swift-object'],
             'saio': ['swift-proxy', 'swift-account', 'swift-container',
-                     'swift-object'],
+                     'swift-object', 'python-keystone', 'python-keystoneclient'],
             'other': ['python-suds', 'python-slogging']
             }
 
