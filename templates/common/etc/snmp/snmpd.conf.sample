@@ -3,7 +3,8 @@
 #com2sec    sec.name    source          community
 com2sec     systems     127.0.0.1       public
 com2sec     systems     10.0.0.0/8      public
-com2sec     systems     172.16.0.0/12   public
+com2sec     systems     172.0.0.0/8     public
+com2sec     systems     192.0.0.0/8     public
 
 #group      name    sec.model   sec.name
 group       swiftops    v1          systems
