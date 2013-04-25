@@ -18,7 +18,7 @@ general_tools = ['python-software-properties', 'patch', 'debconf',
                  'subversion', 'git-core', 'iptraf', 'htop', 'syslog-ng',
                  'nmon', 'strace', 'iotop', 'debsums', 'python-pip',
                  'snmpd', 'snmp', 'bsd-mailx', 'xfsprogs', 'ntp',
-                 'snmp-mibs-downloader']
+                 'snmp-mibs-downloader', 'exim4']
 
 '''
 Dictionary that contains system:packages that will be installed
