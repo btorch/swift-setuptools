@@ -43,8 +43,9 @@ match the keys in the configuration file. The only difference is
 that they will be lowecase in the configuration file.
 '''
 templates = {'common/etc/aliases': ('EMAIL_ADDR', 'PAGER_ADDR'),
-             'common/etc/exim4/update-exim4.conf': ('OUTGOING_DOMAIN',
-                                                    'SMARTHOST'),
+             'common/etc/exim4/update-exim4.conf.conf': ('OUTGOING_DOMAIN',
+                                                         'SMARTHOST'),
+             'common/etc/cron.d/swift_ring_check': ('RINGSERVER_IP', ),
              'common/etc/swift/swift.conf': ('SWIFT_HASH', ),
              'common/etc/syslog-ng/conf.d/swift-syslog-ng.conf': ('SYSLOGS_IP', ),
              'proxy/etc/memcached.conf': ('MEMCACHE_MAXMEM', 'SIM_CONNECTIONS'),
@@ -60,4 +61,6 @@ templates = {'common/etc/aliases': ('EMAIL_ADDR', 'PAGER_ADDR'),
              'admin/etc/swift/dispersion.conf': ('KEYSTONE_AUTH_URI',
                                                  'KEYSTONE_ADMIN_TENANT',
                                                  'KEYSTONE_ADMIN_USER',
-                                                 'KEYSTONE_ADMIN_KEY')}
+                                                 'KEYSTONE_ADMIN_KEY'),
+             'storage/usr/local/bin/drive_mount_check.py': ('OUTGOING_DOMAIN',
+                                                            'EMAIL_ADDR')}
