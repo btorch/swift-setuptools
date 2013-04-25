@@ -17,7 +17,8 @@ general_tools = ['python-software-properties', 'patch', 'debconf',
                  'bonnie++', 'dstat', 'python-configobj', 'curl',
                  'subversion', 'git-core', 'iptraf', 'htop', 'syslog-ng',
                  'nmon', 'strace', 'iotop', 'debsums', 'python-pip',
-                 'snmpd', 'snmp', 'bsd-mailx', 'xfsprogs', 'ntp']
+                 'snmpd', 'snmp', 'bsd-mailx', 'xfsprogs', 'ntp',
+                 'snmp-mibs-downloader']
 
 '''
 Dictionary that contains system:packages that will be installed
