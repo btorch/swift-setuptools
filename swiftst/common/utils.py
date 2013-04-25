@@ -66,7 +66,8 @@ def setup_swiftuser(remote=True):
     cmds = ['groupadd -g 400 swift',
             'useradd -u 400 -g swift -G adm -M -s /bin/false swift']
 
-    with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
+    with settings(hide('running', 'stdout', 'stderr', 'warnings'),
+                  warn_only=True):
         if remote:
             check = run('id swift', quiet=True)
             if not check.succeeded:
@@ -103,11 +104,18 @@ def final_touches(sys_type='', remote=True):
             'mkdir -p /var/log/swift/stats',
             'chown swift.swift /var/log/swift/stats',
             'chown -R swift.swift /etc/swift',
+            'mkdir -p /var/log/swift/hourly',
             'rm -f /etc/swift/*.dpkg-dist']
 
+    svc_cmds = ['service ntp restart',
+                'service exim4 restart',
+                'service syslog-ng restart',
+                'service procps start']
     if remote:
         for cmd in cmds:
             sudo(cmd)
+        for svc_cmd in svc_cmds:
+            sudo(svc_cmd)
         if 'storage' in sys_type:
             sudo('mkdir -p /srv/node')
         if 'saio' in sys_type:
@@ -115,6 +123,8 @@ def final_touches(sys_type='', remote=True):
     else:
         for cmd in cmds:
             local(cmd)
+        for svc_cmd in svc_cmds:
+            local(svc_cmd)
         if 'storage' in sys_type:
             local('mkdir -p /srv/node')
         if 'saio' in sys_type:
@@ -126,7 +136,8 @@ def check_installed(packages):
     This function will install an utility if not preset
     '''
     for name in packages:
-        with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
+        with settings(hide('running', 'stdout', 'stderr', 'warnings'),
+                      warn_only=True):
             c = local('dpkg -s %s' % name, capture=True)
             if c.failed:
                 local('apt-get install %s %s' % (sc.apt_opts, name))
@@ -140,9 +151,11 @@ def svn_setup(conf):
     - Make sure it has src as the group owner and 2777 perms
     - add user(s) to the src group
     - make sure inetd.conf is present openbsd-inetd
-    - echo "svn stream tcp nowait nast /usr/bin/svnserve svnserve -i -r /srv/svn" into inetd.conf and restart
+    - echo "svn stream tcp nowait nast /usr/bin/svnserve
+      svnserve -i -r /srv/svn" into inetd.conf and restart
     - svnadmin create /srv/svn/swift-cluster-configs
-    - svn import SRC_DIR file:///srv/svn/swift-cluster-configs -m "Initial import"
+    - svn import SRC_DIR file:///srv/svn/swift-cluster-configs
+      -m "Initial import"
     - change perms on /srv/svn for
     '''
 
@@ -155,17 +168,18 @@ def pull_configs(sys_type, conf):
     '''
     with settings(hide('running', 'stdout', 'stderr', 'warnings'),
                   warn_only=True):
-        if run('test -d /root/local').succeeded:
-            sudo('mv /root/local /root/local.old')
+        if sudo('test -d /root/local').succeeded:
+            sudo('rm -rf /root/local.old')
+            sudo('mv -f /root/local /root/local.old')
 
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         loc_dir = '/root/local/' + sys_type
-        sudo('git clone git://%s/%s /root/local' % (conf['admin_ip'],
-                                                    conf['repository_name']))
-        c = run('test -d %s' % loc_dir)
+        sudo('git clone -q git://%s/%s /root/local'
+             % (conf['admin_ip'], conf['repository_name']))
+        c = sudo('test -d %s' % loc_dir)
         if c.failed:
             status = 404
             msg = 'Directory was not found! (%s)' % loc_dir
             raise ConfigSyncError(status, msg)
         sudo('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
-              % loc_dir)
+             % loc_dir)
