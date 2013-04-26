@@ -103,7 +103,6 @@ def final_touches(sys_type='', remote=True):
             'chown swift.swift /var/cache/swift',
             'mkdir -p /var/log/swift/stats',
             'chown swift.swift /var/log/swift/stats',
-            'chown swift.swift /srv/node/*',
             'chown -R swift.swift /etc/swift',
             'mkdir -p /var/log/swift/hourly',
             'rm -f /etc/swift/*.dpkg-dist',
@@ -121,8 +120,10 @@ def final_touches(sys_type='', remote=True):
             sudo(svc_cmd)
         if 'storage' in sys_type:
             sudo('mkdir -p /srv/node')
+            sudo('chown swift.swift /srv/node/*')
         if 'saio' in sys_type:
             sudo('mkdir -p /srv/node')
+            sudo('chown swift.swift /srv/node/*')
     else:
         for cmd in cmds:
             local(cmd)
@@ -130,8 +131,10 @@ def final_touches(sys_type='', remote=True):
             local(svc_cmd)
         if 'storage' in sys_type:
             local('mkdir -p /srv/node')
+            local('chown swift.swift /srv/node/*')
         if 'saio' in sys_type:
             local('mkdir -p /srv/node')
+            local('chown swift.swift /srv/node/*')
 
 
 def check_installed(packages):
