@@ -103,15 +103,17 @@ def final_touches(sys_type='', remote=True):
             'chown swift.swift /var/cache/swift',
             'mkdir -p /var/log/swift/stats',
             'chown swift.swift /var/log/swift/stats',
+            'chown swift.swift /srv/node/*',
             'chown -R swift.swift /etc/swift',
             'mkdir -p /var/log/swift/hourly',
             'rm -f /etc/swift/*.dpkg-dist',
             'newaliases']
 
-    svc_cmds = ['service ntp restart',
+    svc_cmds = ['service procps restart',
+                'service ntp start',
                 'service exim4 restart',
                 'service syslog-ng restart',
-                'service procps start']
+                'service rsync restart']
     if remote:
         for cmd in cmds:
             sudo(cmd)
