@@ -105,7 +105,8 @@ def final_touches(sys_type='', remote=True):
             'chown swift.swift /var/log/swift/stats',
             'chown -R swift.swift /etc/swift',
             'mkdir -p /var/log/swift/hourly',
-            'rm -f /etc/swift/*.dpkg-dist']
+            'rm -f /etc/swift/*.dpkg-dist',
+            'newaliases']
 
     svc_cmds = ['service ntp restart',
                 'service exim4 restart',
