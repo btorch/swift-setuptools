@@ -98,4 +98,6 @@ for ((i=0;i<number_of_disks;i++)); do
     printf "KERNELS==\"%s:%s:%s:%s\", %s, KERNEL==\"sd*\", SYMLINK+=\"c%su%sp%%n\"\n" "$host_num" "$bus_num" "$i" "$lun_num" "$controller_model" "$controller_num" "$i" >> /tmp/$output_file
 done
 
+printf "\nGenerated files with udev rules: %s\n\n" "$output_file"
+
 exit 0
