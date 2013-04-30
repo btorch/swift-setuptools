@@ -40,12 +40,15 @@ Syntax
     -r  The ring to be updated (account, container, object)
     -z  Zone number 
     -w  The weight 
-    -c  Controller Number  
-    -s  The first unit to add
-    -e  The last unit to add 
+    -c  Controller number  
+    -s  The first unit number to add
+    -e  The last unit number to add
+    -l  A list of devices around quotes (For VM or Test environments) 
     -h  For this usage screen
 
     NOTE: Device blocks must have UDEV format of cXuYp
+          If being used on a VM or other test environment and not using
+          the UDEV format above use e.g: -l "sdb sdc sdd ..." and no -c/-s/-e options
 
 USAGE
 exit 1
@@ -53,7 +56,7 @@ exit 1
 
 
 # Process Command Line
-while getopts "hi:r:z:w:c:s:e:" OPTION
+while getopts "hi:r:z:w:c:s:e:l:" OPTION
 do 
     case $OPTION in
         h)  
@@ -98,6 +101,9 @@ do
         w)
             weight="${OPTARG}"
             ;;
+        l)
+            drive_list="${OPTARG}"
+        ;;        
         *)
             usage_display
             ;;
@@ -113,7 +119,14 @@ fi
 if [[ -z $zone || -z $weight ]]; then 
     echo -e "Zone and Weight are required"
     usage_display
-fi 
+fi
+ 
+if [[ -z "$controller_num" ]] || [[ -z "$unit_start" ]] || [[ -z "$unit_end" ]]; then
+    if [[ -z $drive_list ]]; then
+        printf "\n\t Error: Please provide either -c/-s/-e or -l options\n"
+        usage_display
+    fi
+fi
 
 
 setup_range (){
@@ -134,11 +147,17 @@ add_to_swiftring (){
     echo -e "Adding $ring_type nodes " >> $logfile
     for (( last_byte = last_byte_start; last_byte <= last_byte_end; last_byte++ )); do 
         node_ip="$prefix.$last_byte"
-        for ((i=unit_start;i<=unit_end;i++)); do
-            dev="c"$controller"u"$i
-            $ring_builder $fbuilder add z$zone-$node_ip:$node_port/$dev $weight >> $logfile
-        done
-        
+        if [[ -z $drive_list ]]; then
+            for ((i=unit_start;i<=unit_end;i++)); do
+                dev="c"$controller"u"$i
+                $ring_builder $fbuilder add z$zone-$node_ip:$node_port/$dev $weight >> $logfile
+            done
+        else
+            for disk in $drive_list; do
+                dev="$disk"
+                $ring_builder $fbuilder add z$zone-$node_ip:$node_port/$dev $weight >> $logfile
+            done    
+        fi
     done
 }
 
