@@ -167,25 +167,40 @@ def svn_setup(conf):
 
 
 @parallel(pool_size=5)
-def pull_configs(sys_type, conf):
+def pull_configs(sys_type, conf, remote=True):
     '''
     This function will git clone the repo on the admin box
     and then sync it over to the root
     '''
     with settings(hide('running', 'stdout', 'stderr', 'warnings'),
                   warn_only=True):
-        if sudo('test -d /root/local').succeeded:
-            sudo('rm -rf /root/local.old')
-            sudo('mv -f /root/local /root/local.old')
+        if remote:
+            if sudo('test -d /root/local').succeeded:
+                sudo('rm -rf /root/local.old')
+                sudo('mv -f /root/local /root/local.old')
+        else:
+            if local('test -d /root/local').succeeded:
+                local('rm -rf /root/local.old')
+                local('mv -f /root/local /root/local.old')
 
-    with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         loc_dir = '/root/local/' + sys_type
-        sudo('git clone -q git://%s/%s /root/local'
-             % (conf['admin_ip'], conf['repository_name']))
-        c = sudo('test -d %s' % loc_dir)
-        if c.failed:
-            status = 404
-            msg = 'Directory was not found! (%s)' % loc_dir
-            raise ConfigSyncError(status, msg)
-        sudo('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
-             % loc_dir)
+        if remote:
+            sudo('git clone -q git://%s/%s /root/local'
+                 % (conf['admin_ip'], conf['repository_name']))
+            c = sudo('test -d %s' % loc_dir)
+            if c.failed:
+                status = 404
+                msg = 'Directory was not found! (%s)' % loc_dir
+                raise ConfigSyncError(status, msg)
+            sudo('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
+                 % loc_dir)
+        else:
+            local('git clone -q git://%s/%s /root/local'
+                  % (conf['admin_ip'], conf['repository_name']))
+            c = local('test -d %s' % loc_dir)
+            if c.failed:
+                status = 404
+                msg = 'Directory was not found! (%s)' % loc_dir
+                raise ConfigSyncError(status, msg)
+            local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
+                  % loc_dir)

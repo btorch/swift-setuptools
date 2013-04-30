@@ -162,18 +162,8 @@ def adminbox_setup(conf):
             raise ResponseError(status, msg)
 
         '''
-        Now sync the admin configs over to the system itself
-        and then restart services like git-daemon and nginx
+        Restart some services
         '''
-        print "[local] : Syncing admin configs to system /"
-        if os.path.exists(dst_loc + '/admin'):
-            c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
-                      % (dst_loc + '/admin'))
-            if c.failed:
-                status = 500
-                msg = 'Error syncing admin files from repo to /'
-                raise ResponseError(status, msg)
-
         print "[local] : Starting up git-daemon"
         c = local('service git-daemon restart')
         if c.failed:
@@ -206,6 +196,8 @@ def adminbox_setup(conf):
     utils.setup_swiftuser(False)
     print "[local] : calling common_setup"
     common_setup(False)
+    print "[local] : calling pull_configs"
+    ustils.pull_configs(['admin'], conf, False)
     print "[local] : calling swift_generic_setup"
     swift_generic_setup(['generic'], False)
 
