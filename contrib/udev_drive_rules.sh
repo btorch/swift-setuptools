@@ -95,7 +95,7 @@ target_num=$(echo $tmp | cut -d ":" -f 3)
 lun_num=$(echo $tmp | cut -d ":" -f 4)
 
 for ((i=0;i<number_of_disks;i++)); do
-    printf "KERNELS==\"%s:%s:%s:%s\", %s, KERNEL==\"sd*\", SYMLINK+=\"c%su%sp%%n\"\n" "$host_num" "$bus_num" "$target_num" "$lun_num" "$controller_model" "$controller_num" "$i" >> /tmp/$output_file
+    printf "KERNELS==\"%s:%s:%s:%s\", %s, KERNEL==\"sd*\", SYMLINK+=\"c%su%sp%%n\"\n" "$host_num" "$bus_num" "$i" "$lun_num" "$controller_model" "$controller_num" "$i" >> /tmp/$output_file
 done
 
 exit 0
