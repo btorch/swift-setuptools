@@ -168,7 +168,8 @@ rebalance_ring (){
     printf "#"
     printf "\n# NOTE: Only rebalance when all $rtype ring changes are done"
     printf "\n# Rebalance $rtype ring ? [y/n]: "
-    read confirm
+    #read confirm
+    confirm="n"
     if [[ "$confirm" == "y" ]]; then
         $ring_builder $rfile rebalance
         update_md5 "$rtype"
@@ -187,6 +188,11 @@ update_md5 (){
 
     printf "#"
     printf "\n# Updating md5 hash for $rtype ring"
+    if [[ ! -e $ring_md5 ]]; then 
+        echo "balabla  account.ring.gz" >> $ring_md5
+        echo "balabla  container.ring.gz" >> $ring_md5
+        echo "balabla  object.ring.gz" >> $ring_md5
+    fi
     case "$rtype" in
         "account")
             rmd5=`/usr/bin/md5sum $ring_path/account.ring.gz | awk '{print $1}'`
@@ -229,7 +235,8 @@ case $ring_type in
         printf "\n#"
         printf "\n# Would you like to proceed adding the node(s) above "
         printf "\n# within the Zone and Weight shown into the $ring_type ring ? [y/n]: "
-        read confirm
+        #read confirm
+        confirm="y"
         if [[ "$confirm" == "y" ]]; then
             add_to_swiftring
             rebalance_ring "$ring_type" "$acctbuilder_file"
@@ -250,7 +257,8 @@ case $ring_type in
         printf "\n#"
         printf "\n# Would you like to proceed adding the node(s) above "
         printf "\n# within the Zone and Weight shown into the $ring_type ring ? [y/n]: "
-        read confirm
+        #read confirm
+        confirm="y"
         if [[ "$confirm" == "y" ]]; then
             add_to_swiftring
             rebalance_ring "$ring_type" "$contbuilder_file"
@@ -271,7 +279,8 @@ case $ring_type in
         printf "\n#"
         printf "\n# Would you like to proceed adding the node(s) above "
         printf "\n# within the Zone and Weight shown into the $ring_type ring ? [y/n]: "
-        read confirm
+        #read confirm
+        confirm="y"
         if [[ "$confirm" == "y" ]]; then
             add_to_swiftring
             rebalance_ring "$ring_type" "$objtbuilder_file"
