@@ -109,6 +109,7 @@ def adminbox_setup(conf):
             'exim4', 'git-daemon-sysvinit', 'syslog-ng',
             'snmpd', 'snmp']
 
+    print "[local] : Apt update and package(s) install"
     with settings(hide('running', 'stdout', 'stderr'), warn_only=True):
         local('apt-get update -qq -o Acquire::http::No-Cache=True')
         local('apt-get install %s %s ' % (sc.apt_opts, ' '.join(pkgs)))
@@ -117,7 +118,6 @@ def adminbox_setup(conf):
     Create and initialize repository
     '''
     print "[local] : Creating and Initializing repository"
-
     name = 'swift-acct' + conf['account_number'] + '-' + conf['account_nick']
     src_loc = conf['genconfigs'] + '/' + name
     dst_loc = conf['repository_base'] + '/' + conf['repository_name']
@@ -162,8 +162,23 @@ def adminbox_setup(conf):
             raise ResponseError(status, msg)
 
         '''
-        Restart some services
+        Checkout the newly initicalized repo and sync it over
         '''
+        admin_loc = '/root/local/admin'
+        print "[local] : Syncing admin configs to system /"
+        if os.path.exists('/root/local'):
+            local('rm -rf /root/local.old')
+            local('mv -f /root/local /root/local.old')
+        local('git clone -q file:///%s/ /root/local' % dst_loc)
+
+        if os.path.exists(admin_loc):
+            c = local('rsync -aq0c --exclude=".git" --exclude=".ignore" %s/ /'
+                      % admin_loc)
+            if c.failed:
+                status = 500
+                msg = 'Error syncing admin files from %s to /' % admin_loc
+                raise ResponseError(status, msg)
+
         print "[local] : Starting up git-daemon"
         c = local('service git-daemon restart')
         if c.failed:
@@ -178,13 +193,6 @@ def adminbox_setup(conf):
             msg = 'Error restarting nginx'
             raise ResponseError(status, msg)
 
-        print "[local] : Restarting syslog-ng"
-        c = local('service syslog-ng restart')
-        if c.failed:
-            status = 500
-            msg = 'Error restarting syslog-ng'
-            raise ResponseError(status, msg)
-
     '''
     Start setting up the box now. The False param indicates that
     the fabric local call should be used instead of the default
@@ -196,8 +204,6 @@ def adminbox_setup(conf):
     utils.setup_swiftuser(False)
     print "[local] : calling common_setup"
     common_setup(False)
-    print "[local] : calling pull_configs"
-    ustils.pull_configs(['admin'], conf, False)
     print "[local] : calling swift_generic_setup"
     swift_generic_setup(['generic'], False)
 
