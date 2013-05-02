@@ -46,6 +46,10 @@ if {$argc>3} {
    send_user "usage: $argv0 ipaddr password \[pub key file\]\n\n"
    exit
 }
+if {$argc<2} {
+   send_user "usage: $argv0 ipaddr password \[pub key file\]\n\n"
+   exit
+}
 
 # script must be run by root user
 set whoami [exec id -u]
