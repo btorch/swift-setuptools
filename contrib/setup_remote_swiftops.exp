@@ -43,11 +43,13 @@ if {$force_conservative} {
 
 # display usage
 if {$argc>3} {
-   send_user "usage: $argv0 ipaddr password \[pub key file\]\n\n"
+   send_user "usage: $argv0 ipaddr password \[pub key file\]\n"
+   send_user "\t RSA public key defaults to /home/swiftops/.ssh/id_rsa.pub\n\n"
    exit
 }
 if {$argc<2} {
-   send_user "usage: $argv0 ipaddr password \[pub key file\]\n\n"
+   send_user "usage: $argv0 ipaddr password \[pub key file\]\n"
+   send_user "\t RSA public key defaults to /home/swiftops/.ssh/id_rsa.pub\n\n"
    exit
 }
 
