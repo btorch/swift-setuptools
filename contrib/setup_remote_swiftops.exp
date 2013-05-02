@@ -71,14 +71,14 @@ if { [string length $pub_key] == 0 } {
 }
 
 set timeout -1
-spawn scp $pub_key root@$ipaddr:/tmp/id_rsa.pub
+spawn scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=QUIET $pub_key root@$ipaddr:/tmp/id_rsa.pub
 match_max 5000
 #set expect_out(buffer) {}
 expect "*?assword:*"
 sleep .1
 send -- "$password\r"
 send_user "\n\n"
-spawn ssh -o StrictHostKeyChecking=no root@$ipaddr
+spawn ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=QUIET root@$ipaddr
 match_max 5000
 #set expect_out(buffer) {}
 expect "*?assword:*"
