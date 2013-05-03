@@ -37,9 +37,9 @@ keystone_ip = 172.16.0.3
 keystone_port = 35357
 keystone_auth_proto = http
 keystone_auth_uri = http://172.16.0.3:5000/
-keystone_admin_tenant = Services
-keystone_admin_user = swif
-keystone_admin_key = noswift
+keystone_admin_tenant = services
+keystone_admin_user = tokenvalidator
+keystone_admin_key = noswifthere
 
 [generate-configs]
 template_dir = /etc/swift-setuptools/templates
