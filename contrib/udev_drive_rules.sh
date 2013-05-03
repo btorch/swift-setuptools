@@ -34,7 +34,7 @@ usage_display (){
 cat << USAGE
 
 Syntax:
-       sudo ./udev_drive_rules.sh -c CONTROLLER_NUMBER -D FIRST_DEVICE -n NUMBER_OF_VIRTUAL_DISKS [-o OUTFILE]
+       sudo ./udev_drive_rules.sh -c CONTROLLER_NUMBER -d FIRST_DEVICE -n NUMBER_OF_VIRTUAL_DISKS [-o OUTFILE]
         -c  The controller number 
         -d  This should be the first device attached to a controller 
         -n  The number of virtual disks that this controller manages 
