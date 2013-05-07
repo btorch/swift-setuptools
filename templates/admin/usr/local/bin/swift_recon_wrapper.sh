@@ -55,8 +55,6 @@ fi
 
 if [[ -z ${recon_options} ]]; then 
     recon_options=("--all")
-else
-    filename="recon_report_${cur_wday}_${cur_date}.txt"
 fi
 
 
