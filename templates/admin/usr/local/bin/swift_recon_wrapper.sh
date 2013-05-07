@@ -12,7 +12,7 @@
 info_base="/var/www/nginx-default/swift_info"
 recon_reports="/var/www/nginx-default/swift_info/recon_reports"
 past_reports="/var/www/nginx-default/swift_info/recon_reports/previous_reports"
-cur_wday=$(date +"%A")
+cur_wday=$(date +"%A" | tr [A-Z] [a-z])
 cur_date=$(date +"%Y-%m-%d")
 filename="recon_report_${cur_wday}_${cur_date}.txt"
 retention=45
@@ -65,7 +65,7 @@ fi
 
 ### Main Work ###
 if [[ "${recon_options[@]}" == "--all" ]]; then 
-    if [[ "${cur_wday}" == "Sunday" ]]; then 
+    if [[ "${cur_wday}" == "sunday" ]]; then 
         if [[ "${mail_client}" != "None" ]]; then
             ${recon_bin} ${recon_options[@]} | tee ${recon_reports}/${filename} | ${mail_client} \
             "${mail_opts[@]}" -s "${email_subj}" ${email_to}
