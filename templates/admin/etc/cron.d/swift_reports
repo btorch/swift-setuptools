@@ -2,5 +2,5 @@
 # which in turn redirects it to the proper location 
 ##MAILTO="swiftops"
 ## m h  dom mon dow   command
-55 23 * * 0 root /usr/local/bin/swift_recon_wrapper.sh
-##58 23 * * * swiftops bash /usr/local/bin/storage_usage.sh
+50 23 * * * root /usr/local/bin/swift_recon_wrapper.sh
+52 23 * * * root /usr/local/bin/swift_dispersion_report.sh
