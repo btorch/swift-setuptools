@@ -41,6 +41,7 @@ Syntax
     -z  Zone number 
     -w  The weight 
     -c  Controller number  
+    -p  Device prefix for mapper setups (cannot be used with -c)  
     -s  The first unit number to add
     -e  The last unit number to add
     -l  A list of devices around quotes (For VM or Test environments) 
@@ -56,7 +57,7 @@ exit 1
 
 
 # Process Command Line
-while getopts "hi:r:z:w:c:s:e:l:" OPTION
+while getopts "hi:r:z:w:c:s:e:l:p:" OPTION
 do 
     case $OPTION in
         h)  
@@ -64,6 +65,9 @@ do
             ;;
         c)  
             controller="${OPTARG}"
+            ;;
+        p)  
+            device_prefix="${OPTARG}"
             ;;
         s)
             unit_start="${OPTARG}"
@@ -149,7 +153,11 @@ add_to_swiftring (){
         node_ip="$prefix.$last_byte"
         if [[ -z $drive_list ]]; then
             for ((i=unit_start;i<=unit_end;i++)); do
-                dev="c"$controller"u"$i
+                if [[ -z $device_prefix ]]; then 
+                    dev="c"$controller"u"$i
+                else
+                    dev=${device_prefix}${i}
+                fi
                 $ring_builder $fbuilder add z$zone-$node_ip:$node_port/$dev $weight >> $logfile
             done
         else
