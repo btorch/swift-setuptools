@@ -35,13 +35,13 @@ usage_display (){
 cat << USAGE
 
 Syntax:
-    sudo setup_drives.sh [-V -l "drive_list"] [-o] | [-c num -s num -e num] [-o]
-        -V  Indicates you are setting them up on a Virtual Instance
-        -l  List of devices to be setup e.g: "xvdb xvdd xvdf xvdg" (USE double quotes)
+    sudo setup_drives.sh [-l "drive_list"] [-o] | [ [-c number | -p mapper_prefix] -s num -e num] [-o]
+        -p  Device prefix for mapper setups. e.g: mpath, lvm ... etc (Use double quotes)
+        -l  List of devices to be setup e.g: "xvdb xvdd xvdf xvdg" (Use double quotes)
         -c  Controller nummber in case you are using the cXuYp udev formatting 
         -s  The first unit to start the drive setup from
         -e  The last unit that the drive setup will run on
-        -o  Allows the override and will partition and format c0u0p (BeCareful: ususally OS drive)
+        -o  Allows the override and will partition and format c0u0p (Becareful: ususally OS drive)
         -h For this usage screen
 
     NOTE: The -c/-s/-e options cannot be used when -V is declared
@@ -53,11 +53,11 @@ exit 1
 
 
 # Parsing arguments
-while getopts "Vol:c:s:e:h" opts
+while getopts "ol:c:s:e:p:h" opts
 do
     case $opts in         
-        V)
-            vm_use=1
+        p)
+            device_prefix="${OPTARG}"
         ;;
         o)
             override=1
@@ -86,29 +86,29 @@ done
 
 
 # Check on ARGS count
-if [[ $num_of_args -lt 3 ]]; then 
+if [[ $num_of_args -lt 2 ]]; then 
     printf "\n\t Error: Must have at least 2 arguments given\n"
     usage_display
 fi
 
 # Checking ARGS passed
-if [[ -z "$vm_use" ]] && [[ ! -z $drive_list ]]; then 
-    printf "\n\t Error: Both -V and -l must be provided\n"
+if [[ ! -z "$controller_num" ]] && [[ ! -z $device_prefix ]]; then 
+    printf "\n\t Error: cannot use both -c and -p\n"
     usage_display
 fi
-if [[ ! -z "$vm_use" ]] && [[ -z $drive_list ]]; then 
-    printf "\n\t Error: Both -V and -l must be provided\n"
+if [[ ! -z "$controller_num" ]] && [[ ! -z $drive_list ]]; then 
+    printf "\n\t Error: cannot use both -c and -l\n"
     usage_display
 fi
-if [[ ! -z "$vm_use" ]] && [[ ! -z $drive_list ]]; then 
-    if [[ ! -z "$controller_num" ]] || [[ ! -z "$unit_start" ]] || [[ ! -z "$unit_end" ]]; then
-        printf "\n\t Error: Cannot declare -c/-s/-e options with -V and -l \n"
-        usage_display
-    fi
+if [[ ! -z "$device_prefix" ]] && [[ ! -z $drive_list ]]; then 
+    printf "\n\t Error: cannot use both -p and -l\n"
+    usage_display
 fi
-if [[ -z "$controller_num" ]] || [[ -z "$unit_start" ]] || [[ -z "$unit_end" ]]; then
-    if [[ -z "$vm_use" ]] && [[ -z $drive_list ]]; then 
-        printf "\n\t Error: All following options must be declared -c/-s/-e\n"
+
+
+if [[ ! -z $drive_list ]]; then 
+    if [[ ! -z "$unit_start" ]] || [[ ! -z "$unit_end" ]]; then
+        printf "\n\t Error: cannot declare -s/-e options with -l \n"
         usage_display
     fi
 fi
@@ -183,17 +183,44 @@ vm_drive_setup() {
     mount -a
 }
 
+mapper_drive_setup() {
+    for ((i=unit_start;i<=unit_end;i++)); do
+        disk=${device_prefix}${i}
+        disk_label=${disk}
+        if [[ ! -e /dev/mapper/$disk ]]; then
+            printf "\n\t Error: device block does not exist (/dev/mapper/${disk}) \n"
+            exit 1
+        fi
+
+        $parted -s /dev/mapper/$disk mklabel gpt
+        sz=$(parted -s /dev/mapper/$disk print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
+        $parted -s /dev/mapper/$disk mkpart primary xfs 0 $sz
+        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk_label /dev/mapper/$disk"1"
+        mkdir -p /srv/node/$disk_label 
+        fstab_line="LABEL=$disk_label /srv/node/$disk_label xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
+        exists=$(sed -n "/$disk_label xfs/q 2" /etc/fstab  ; echo $?)
+        if [[ $exists -ne 2 ]]; then 
+            echo "$fstab_line" >> /etc/fstab
+        fi
+    done
+    mount -a
+}
+
 
 # MAIN
 ##########
 check_cmds
-if [[ -z $vm_use ]]; then 
+if [[ ! -z $controller_num ]]; then 
     hw_drive_setup
 fi
 
-if [[ ! -z $vm_use ]]; then 
+if [[ ! -z $drive_list ]]; then 
     vm_drive_setup
 fi
+
+if [[ ! -z $device_prefix ]]; then 
+    mapper_drive_setup
+fi    
 
 printf "\n\n"
 exit 0 
