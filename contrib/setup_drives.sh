@@ -195,7 +195,7 @@ mapper_drive_setup() {
         $parted -s /dev/mapper/$disk mklabel gpt
         sz=$(parted -s /dev/mapper/$disk print | grep "Disk"|cut -d ":" -f 2|tr -d " ")
         $parted -s /dev/mapper/$disk mkpart primary xfs 0 $sz
-        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk_label /dev/mapper/$disk"1"
+        $mkfs -i size=$inode_size -d su=64k,sw=1 -f -L $disk_label /dev/mapper/$disk"p1"
         mkdir -p /srv/node/$disk_label 
         fstab_line="LABEL=$disk_label /srv/node/$disk_label xfs defaults,noatime,nodiratime,nobarrier,logbufs=8  0  0"
         exists=$(sed -n "/$disk_label xfs/q 2" /etc/fstab  ; echo $?)
